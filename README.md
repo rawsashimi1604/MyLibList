@@ -6,7 +6,7 @@ This is our server component for our project for module **ICT2103 Information Ma
 |-----------|----------------|-------------------|
 | 2101927   | rawsashimi1604 | Gavin Loo Wei Ren |
 |           |                | Jian Wei          |
-|           |                | Irfaan            |
+| 2100701   | irfaan96       | Irfaan            |
 |           |                | Jun Wei           |
 |           |                | Yong Chong        |
 |           |                | Zaf               |
