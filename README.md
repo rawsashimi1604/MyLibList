@@ -1,6 +1,15 @@
 # 2103 Project MyLibList, Server
 
-This is our server component for our project for module **ICT2103 Information Management** . It includes a REST API using various `GET`, `POST`, `PUT` and `DELETE` routes. The project is also Dockerized to be run in any environment.
+This is our server component for our project for module **ICT2103 Information Management** . It includes a REST API (Client-Server Architecture) using various `GET`, `POST`, `PUT` and `DELETE` routes. The project is also Dockerized to be run in any environment.
+
+| StudentID | GithubHandle   | Name              |
+|-----------|----------------|-------------------|
+| 2101927   | rawsashimi1604 | Gavin Loo Wei Ren |
+|           |                | Jian Wei          |
+|           |                | Irfaan            |
+|           |                | Jun Wei           |
+|           |                | Yong Chong        |
+|           |                | Zaf               |
 
 ## Technologies used
 
@@ -8,7 +17,6 @@ This is our server component for our project for module **ICT2103 Information Ma
 - PostgreSQL
 - Node.js
 - Express.js
-- Prettier
 - Prettier
 
 ## Requirements
@@ -18,6 +26,7 @@ This is our server component for our project for module **ICT2103 Information Ma
 - You should have Node and npm installed on your machine to run the npm scripts.
 - You should run the docker container in a Linux/MacOS environment to enable hot reloading (Nodemon) in the container.
 - You should have an `.env` file created in the root directory of this project. Details of `.env` file will be provided below.
+- You should have Postman to simulate/run API requests to the server.
 
 ### Environment File Contents
 
