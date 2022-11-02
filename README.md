@@ -5,9 +5,9 @@ This is our server component for our project for module **ICT2103 Information Ma
 | StudentID | GithubHandle   | Name              |
 |-----------|----------------|-------------------|
 | 2101927   | rawsashimi1604 | Gavin Loo Wei Ren |
-| 2101391   | jianweiiii     | Lim Jian Wei      |
+|           |                | Jian Wei          |
 | 2100701   | irfaan96       | Irfaan            |
-|           |                | Jun Wei           |
+| 2100614   | junweilam      | Jun Wei           |
 |           |                | Yong Chong        |
 |           |                | Zaf               |
 
