@@ -9,7 +9,7 @@ This is our server component for our project for module **ICT2103 Information Ma
 | 2100701   | irfaan96       | Irfaan            |
 | 2100614   | junweilam      | Jun Wei           |
 |           |                | Yong Chong        |
-|           |                | Zaf               |
+| 2100764   | ZafrullaKamil  | Zafrulla          |
 
 ## Technologies used
 
