@@ -8,7 +8,7 @@ This is our server component for our project for module **ICT2103 Information Ma
 | 2101391   | jianweiiii     | Lim Jian Wei      |
 | 2100701   | irfaan96       | Irfaan            |
 | 2100614   | junweilam      | Jun Wei           |
-| 2100711   | 2100711        | Yong Chong        |
+|           |                | Yong Chong        |
 |           |                | Zaf               |
 
 ## Technologies used
