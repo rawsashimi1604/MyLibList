@@ -23,6 +23,7 @@ This is our server component for our project for module **ICT2103 Information Ma
 
 - You should have Docker Desktop installed on your local machine.
 - You should create a Docker volume: `postgres-data` to persist database data.
+  - To create docker volume, run the command `docker volume create postgres-data`, when using `docker volume ls`, postgres-data should be listed.
 - You should have Node and npm installed on your machine to run the npm scripts.
 - You should run the docker container in a Linux/MacOS environment to enable hot reloading (Nodemon) in the container.
 - You should have an `.env` file created in the root directory of this project. Details of `.env` file will be provided below.
