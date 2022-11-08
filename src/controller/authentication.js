@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import validateUser from "../lib/authentication/validateUser.js";
+import validateUserLogin from "../lib/authentication/validateUserLogin.js";
 import generateAccessToken from "../lib/authentication/generateAccessToken.js";
 import bcrypt from "bcrypt";
 
@@ -9,20 +9,20 @@ function handleIndex(req, res) {
 
 async function handleUserLogin(req, res) {
   const user = {
-    username: req.body["username"],
+    email: req.body["email"],
     password: req.body["password"],
   };
 
   // User object was validated! Correct info was passed..
-  if (validateUser(user)) {
+  if (validateUserLogin(user)) {
     const database = res.locals.database;
-    const result = await database.relations.user.getHashedUserPassword(user);
+    const result = await database.relations.users.getHashedUserPassword(user);
 
     // If user does not exist return 400
-    const checkUserExists = await database.relations.user.checkUserExists(user);
+    const checkUserExists = await database.relations.users.checkUserExists(user);
     console.log(checkUserExists);
     if (checkUserExists.rows.length === 0)
-      return res.status(400).send("Invalid username.");
+      return res.status(400).send("Invalid email.");
 
     // Password queried from DB
     const hashedPassword = result.rows[0].password;
@@ -30,7 +30,7 @@ async function handleUserLogin(req, res) {
     if (await bcrypt.compare(user.password, hashedPassword)) {
       // Password was correct!
       // Create JSON Web token, serialize user object
-      const serializedObject = { username: user.username };
+      const serializedObject = { email: user.email };
 
       // Generate access token
       const accessToken = generateAccessToken(serializedObject);
@@ -113,7 +113,7 @@ async function handleNewToken(req, res) {
 
       // Generate a new access token...
       const accessToken = generateAccessToken({
-        username: serializedObject.username,
+        email: serializedObject.email,
       });
 
       // Send new access token to client...

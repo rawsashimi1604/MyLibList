@@ -1,52 +1,51 @@
-import UserRelation from "./user.js";
+import UserRelation from "./users.js";
 import RefreshTokenRelation from "./refresh_token.js";
-
 import AlternativeTitlesRelation from "./alternative_titles.js";
-import BookList from "./book_lists.js";
-import BookContributors from "./books_contributors.js";
-import BooksInCollections from "./books_in_collections.js";
-import BooksLanguages from "./books_languages.js";
-import BooksLCSH from "./books_lcsh.js";
-import BooksPublishedBy from "./books_published_by.js";
-import BooksSubjects from "./books_subjects.js";
-import BooksUsersLikes from "./books_users_likes.js";
-import BooksUsersStatus from "./books_users_status.js";
-import Books from "./books.js";
-import Collections from "./collections.js";
-import Contributors from "./contributors.js";
-import Languages from "./languages.js";
-import LCSH from "./lcsh.js";
-import Publishers from "./publishers.js";
-import ReadingLists from "./reading_lists.js";
-import Subjects from "./subjects.js";
-import UsersBookmarks from "./users_bookmarks.js";
+import BookListRelation from "./book_lists.js";
+import BookContributorsRelation from "./books_contributors.js";
+import BooksInCollectionsRelation from "./books_in_collections.js";
+import BooksLanguagesRelation from "./books_languages.js";
+import BooksLCSHRelation from "./books_lcsh.js";
+import BooksPublishedByRelation from "./books_published_by.js";
+import BooksSubjectsRelation from "./books_subjects.js";
+import BooksUsersLikesRelation from "./books_users_likes.js";
+import BooksUsersStatusRelation from "./books_users_status.js";
+import BooksRelation from "./books.js";
+import CollectionsRelation from "./collections.js";
+import ContributorsRelation from "./contributors.js";
+import LanguagesRelation from "./languages.js";
+import LCSHRelation from "./lcsh.js";
+import PublishersRelation from "./publishers.js";
+import ReadingListsRelation from "./reading_lists.js";
+import SubjectsRelation from "./subjects.js";
+import UsersBookmarksRelation from "./users_bookmarks.js";
 
 
-const user = UserRelation;
+const users = UserRelation;
 const refresh_token = RefreshTokenRelation;
 
 const alternative_titles = AlternativeTitlesRelation;
-const book_lists = BookList;
-const books_contributors = BookContributors;
-const books_in_collections = BooksInCollections;
-const books_languages = BooksLanguages;
-const books_lcsh = BooksLCSH;
-const books_published_by = BooksPublishedBy;
-const books_subjects = BooksSubjects;
-const books_users_likes = BooksUsersLikes;
-const books_users_status = BooksUsersStatus;
-const books = Books;
-const collections = Collections;
-const contributors = Contributors;
-const languages = Languages;
-const lcsh = LCSH;
-const publishers = Publishers;
-const reading_lists = ReadingLists;
-const subjects = Subjects;
-const users_bookmarks = UsersBookmarks;
+const book_lists = BookListRelation;
+const books_contributors = BookContributorsRelation;
+const books_in_collections = BooksInCollectionsRelation;
+const books_languages = BooksLanguagesRelation;
+const books_lcsh = BooksLCSHRelation;
+const books_published_by = BooksPublishedByRelation;
+const books_subjects = BooksSubjectsRelation;
+const books_users_likes = BooksUsersLikesRelation;
+const books_users_status = BooksUsersStatusRelation;
+const books = BooksRelation;
+const collections = CollectionsRelation;
+const contributors = ContributorsRelation;
+const languages = LanguagesRelation;
+const lcsh = LCSHRelation;
+const publishers = PublishersRelation;
+const reading_lists = ReadingListsRelation;
+const subjects = SubjectsRelation;
+const users_bookmarks = UsersBookmarksRelation;
 
 export default {
-  user,
+  users,
   refresh_token,
   alternative_titles,
   book_lists,
