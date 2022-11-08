@@ -106,6 +106,20 @@ CREATE TABLE IF NOT EXISTS "users_bookmarks"(
     PRIMARY KEY (email,book_uuid)
 );
 
+CREATE TABLE IF NOT EXISTS "books_users_status"(
+    email VARCHAR(128),
+    book_uuid UUID,
+    status VARCHAR(16) NOT NULL,
+    timestamp_updated TIMESTAMP WITH TIME ZONE NOT NULL,
+    FOREIGN KEY(email)
+        REFERENCES "users"(email)
+        ON DELETE CASCADE,
+    FOREIGN KEY(book_uuid)
+        REFERENCES "books"(book_uuid)
+        ON DELETE CASCADE,    
+    PRIMARY KEY (email,book_uuid)
+)
+
 CREATE TABLE IF NOT EXISTS "languages"(
     language_id BIGSERIAL PRIMARY KEY,
     language VARCHAR(256)
