@@ -1,5 +1,5 @@
 import cleanCSVData from "./cleanPSQL.js";
-import setupEnv from "./lib/utils/setupEnv.js";
+import setupEnv from "../src/lib/utils/setupEnv.js";
 import databases from "../db/index.js";
 
 // Set up dotenv environment from .env file.
@@ -10,3 +10,5 @@ const database = databases.PSQLDatabase;
 
 // Insert seeding algorithm here...
 // ...
+
+console.log("seed script");
