@@ -2,7 +2,7 @@ import db from "../config.js";
 
 function getAllBooks_Lcsh() {
   try {
-    const query = `SELECT * FROM "book_lcshs"`;
+    const query = `SELECT * FROM "books_lcsh"`;
     return db.query(query);
   } catch (err) {
     console.log(err);
