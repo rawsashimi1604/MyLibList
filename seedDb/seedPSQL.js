@@ -1,3 +1,4 @@
+import cleanCSVData from "./cleanPSQL.js";
 import setupEnv from "./lib/utils/setupEnv.js";
 import databases from "../db/index.js";
 
