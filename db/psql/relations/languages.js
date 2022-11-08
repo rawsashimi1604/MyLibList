@@ -10,14 +10,15 @@ function getLanguages() {
   }
 }
 
-function addLanguages(language) {
+function getLanguageIdByLanguage(language) {
   try {
-    const query = `INSERT INTO "languages"(
-      language_id
-    ) VALUES ($1)`;
+    const query = `
+      SELECT language_id FROM "languages"
+      WHERE language = $1;
+    `;
 
     const params = [
-      language.language_id
+      language
     ]
     
     return db.query(query, params);
@@ -27,4 +28,21 @@ function addLanguages(language) {
   }
 }
 
-export default { getLanguages, addLanguages };
+function addLanguages(language) {
+  try {
+    const query = `INSERT INTO "languages"(
+      language
+    ) VALUES ($1) RETURNING *`;
+
+    const params = [
+      language
+    ]
+    
+    return db.query(query, params);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
+export default { getLanguages, getLanguageIdByLanguage, addLanguages };

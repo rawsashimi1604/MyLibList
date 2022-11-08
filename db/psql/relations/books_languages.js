@@ -15,7 +15,7 @@ function addBooksLanguages(booksLanguages) {
     const query = `INSERT INTO "books_languages"(
       book_uuid,
       language_id
-    ) VALUES ($1, $2)`;
+    ) VALUES ($1, $2) RETURNING *`;
 
     const params = [booksLanguages.book_uuid, booksLanguages.language_id];
 

@@ -10,14 +10,31 @@ function getAllLcsh() {
   }
 }
 
+function getLCSHIdByLCSH(lcsh) {
+  try {
+    const query = `
+      SELECT lcsh_id FROM "lcsh"
+      WHERE lcsh_tag = $1;
+    `;
+
+    const params = [
+      lcsh
+    ]
+    
+    return db.query(query, params);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
 function addLcsh(lcsh) {
   try {
     const query = `INSERT INTO "lcsh"(
-      lcsh_id,
       lcsh_tag
-    ) VALUES ($1, $2)`;
+    ) VALUES ($1) RETURNING *`;
 
-    const params = [lcsh.lcsh_id, lcsh.lcsh_tag];
+    const params = [lcsh];
 
     return db.query(query, params);
   } catch (err) {
@@ -26,4 +43,4 @@ function addLcsh(lcsh) {
   }
 }
 
-export default { getAllLcsh, addLcsh };
+export default { getAllLcsh, getLCSHIdByLCSH, addLcsh };

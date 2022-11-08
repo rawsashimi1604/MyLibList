@@ -10,14 +10,31 @@ function getSubjects() {
   }
 }
 
+function getSubjectIdBySubject(subject) {
+  try {
+    const query = `
+      SELECT subject_id FROM "subjects"
+      WHERE subject_title = $1;
+    `;
+
+    const params = [
+      subject
+    ]
+    
+    return db.query(query, params);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
 function addSubjects(subject) {
   try {
     const query = `INSERT INTO "subjects"(
-      subject_id,
       subject_title
-    ) VALUES ($1, $2)`;
+    ) VALUES ($1) RETURNING *`;
 
-    const params = [subject.subject_id, subject.subject_title];
+    const params = [subject];
 
     return db.query(query, params);
   } catch (err) {
@@ -26,4 +43,4 @@ function addSubjects(subject) {
   }
 }
 
-export default { getSubjects, addSubjects };
+export default { getSubjects, getSubjectIdBySubject, addSubjects };

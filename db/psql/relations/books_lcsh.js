@@ -1,6 +1,6 @@
 import db from "../config.js";
 
-function getAllBooks_Lcsh() {
+function getAllBooksLcsh() {
   try {
     const query = `SELECT * FROM "books_lcsh"`;
     return db.query(query);
@@ -10,12 +10,12 @@ function getAllBooks_Lcsh() {
   }
 }
 
-function addBook_Lcsh(book_lcsh) {
+function addBookLcsh(book_lcsh) {
   try {
     const query = `INSERT INTO "books_lcsh"(
         lcsh_id,
         book_uuid
-    ) VALUES ($1, $2)`;
+    ) VALUES ($1, $2) RETURNING *`;
 
     const params = [book_lcsh.lcsh_id, book_lcsh.book_uuid];
 
@@ -26,4 +26,4 @@ function addBook_Lcsh(book_lcsh) {
   }
 }
 
-export default { getAllBooks_Lcsh, addBook_Lcsh };
+export default { getAllBooksLcsh, addBookLcsh };

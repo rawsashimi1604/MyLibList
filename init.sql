@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS "users"(
 );
 
 CREATE TABLE IF NOT EXISTS "books"( -- Check excel file after for data type
-    book_uuid UUID PRIMARY KEY,
+    book_uuid TEXT PRIMARY KEY,
     access_rights TEXT,
     rights TEXT,
     abstract TEXT,
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS "reading_lists"( -- on delete cascade
 
 CREATE TABLE IF NOT EXISTS "books_lists"(
     reading_list_id BIGSERIAL,
-    book_uuid UUID,
+    book_uuid TEXT,
     timestamp_created_on TIMESTAMP NOT NULL,
     FOREIGN KEY (reading_list_id) 
         REFERENCES "reading_lists"(reading_list_id)
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS "books_lists"(
 
 CREATE TABLE IF NOT EXISTS "books_users_likes"( 
     email VARCHAR(128),
-    book_uuid UUID,
+    book_uuid TEXT,
     timestamp_liked TIMESTAMP NOT NULL,
     FOREIGN KEY(email) 
         REFERENCES "users"(email)
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS "books_users_likes"(
 
 CREATE TABLE IF NOT EXISTS "users_bookmarks"(
     email VARCHAR(128),
-    book_uuid UUID,
+    book_uuid TEXT,
     page INT NOT NULL,
     timestamp_bookmarked TIMESTAMP NOT NULL,
     FOREIGN KEY(email)
@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS "users_bookmarks"(
 
 CREATE TABLE IF NOT EXISTS "books_users_status"(
     email VARCHAR(128),
-    book_uuid UUID,
+    book_uuid TEXT,
     status VARCHAR(16) NOT NULL,
     timestamp_updated TIMESTAMP NOT NULL,
     FOREIGN KEY(email)
@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS "languages"(
 );
 
 CREATE TABLE IF NOT EXISTS "books_languages"( -- on delete cascade?
-    book_uuid UUID,
+    book_uuid TEXT,
     language_id BIGSERIAL,
     FOREIGN KEY (book_uuid)
         REFERENCES "books"(book_uuid)
@@ -123,7 +123,7 @@ CREATE TABLE IF NOT EXISTS "subjects"(
 
 CREATE TABLE IF NOT EXISTS "books_subjects"(
     subject_id BIGSERIAL,
-    book_uuid UUID,
+    book_uuid TEXT,
     FOREIGN KEY (subject_id)
         REFERENCES "subjects"(subject_id)
         ON DELETE CASCADE,
@@ -140,7 +140,7 @@ CREATE TABLE IF NOT EXISTS "lcsh"(
 
 CREATE TABLE IF NOT EXISTS "books_lcsh"(
     lcsh_id BIGSERIAL,
-    book_uuid UUID,
+    book_uuid TEXT,
     FOREIGN KEY (lcsh_id)
         REFERENCES "lcsh"(lcsh_id)
         ON DELETE CASCADE,  
@@ -158,7 +158,7 @@ CREATE TABLE IF NOT EXISTS "publishers"(
 CREATE TABLE IF NOT EXISTS "books_published_by"(
     publisher_type VARCHAR(256) NOT NULL,
     publisher_id BIGSERIAL,
-    book_uuid UUID,
+    book_uuid TEXT,
     FOREIGN KEY (publisher_id)
         REFERENCES "publishers"(publisher_id)
         ON DELETE CASCADE, 
@@ -175,7 +175,7 @@ CREATE TABLE IF NOT EXISTS "collections"(
 
 CREATE TABLE IF NOT EXISTS "books_in_collections"(
     collection_id BIGSERIAL,
-    book_uuid UUID,
+    book_uuid TEXT,
     FOREIGN KEY (collection_id)
         REFERENCES "collections"(collection_id)
         ON DELETE CASCADE, 
@@ -188,7 +188,7 @@ CREATE TABLE IF NOT EXISTS "books_in_collections"(
 CREATE TABLE IF NOT EXISTS "alternative_titles"( -- delete cascade
     alternative_title_id BIGSERIAL PRIMARY KEY,
     alternate_title TEXT NOT NULL,
-    book_uuid UUID,
+    book_uuid TEXT,
     FOREIGN KEY (book_uuid)
         REFERENCES "books"(book_uuid)
         ON DELETE CASCADE     
@@ -201,7 +201,7 @@ CREATE TABLE IF NOT EXISTS "contributors"(
 
 CREATE TABLE IF NOT EXISTS "books_contributors"(
     contributor_id BIGSERIAL,
-    book_uuid UUID,
+    book_uuid TEXT,
     contributor_type TEXT,
     FOREIGN KEY (contributor_id)
         REFERENCES "contributors"(contributor_id)

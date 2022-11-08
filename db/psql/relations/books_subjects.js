@@ -15,7 +15,7 @@ function addBooksSubjects(booksSubjects) {
     const query = `INSERT INTO "books_subjects"(
       subject_id,
       book_uuid
-    ) VALUES ($1, $2)`;
+    ) VALUES ($1, $2) RETURNING *`;
 
     const params = [booksSubjects.subject_id, booksSubjects.book_uuid];
 
