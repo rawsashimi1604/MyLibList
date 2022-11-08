@@ -28,15 +28,85 @@ fs.createReadStream("../seedDb/csv_data/nlb_data.csv")
     // All the keys in ur object
     let uuid = row[0];
     let uri = row[1];
+    let title = row[4];
     let alternative_titles = []
+    let contributor = []
+    let digital_publisher = row[18]
+    let original_publisher = row[19]
+    let year_created = row[21]
+    let description = row[22]
+    let abstract = row[23]
+    let subject_lcsh = []
+    let subject = []
+    let language = []
+    let collections = []
+    let nlb_type = row[28]
+    let rights = row[29]
+    let access_rights = row[30]
 
     // Logic 
+    if(row[1] == "NA"){
+        uri = ""
+    }
     if(row[5] !== "NA") {
       alternative_titles = row[5].split("|");
     }
 
+    if(row[12] !== "NA"){
+        contributor = row[12].split("|");
+    }
+
+    if(row[18] == "NA"){
+        digital_publisher = ""
+    }
+
+    if(row[19] == "NA"){
+        original_publisher = ""
+    }
+
+    if(row[21] == "NA"){
+        year_created = ""
+    }
+
+    if(row[22] == "NA"){
+        description = ""
+    }
+
+    if(row[23] == "NA"){
+        abstract = ""
+    }
+
+    if(row[24] !== "NA"){
+        subject_lcsh = row[24].split("|")
+    }
+
+    if(row[25] !== "NA"){
+        subject = row[25].split("|")
+    }
+
+    if(row[26] !== "NA"){
+        language = row[26].split("|")
+    }
+
+    if(row[27] !== "NA"){
+        collections = row[27].split("|")
+    }
+
+    if(row[28] == "NA"){
+        nlb_type = ""
+    }
+
+    if(row[29] == "NA"){
+        rights = ""
+    }
+
+    if(row[30] == "NA"){
+        access_rights = ""
+    }
     const cleanedDataRow = {
-      uuid, uri, alternative_titles
+      uuid, uri, title, alternative_titles, contributor, digital_publisher, original_publisher, year_created,
+      description, abstract, subject_lcsh, subject, language, collections,
+      nlb_type, rights, access_rights
     }
     cleanedData.push(cleanedDataRow)
   })
