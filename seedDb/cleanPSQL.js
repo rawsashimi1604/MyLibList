@@ -22,7 +22,7 @@ async function cleanCSVData(path) {
         let contributors = [];
         let digital_publisher = row[18];
         let original_publisher = row[19];
-        let year_created = row[21];
+        let date_created = row[21];
         let description = row[22];
         let abstract = row[23];
         let subject_lcsh = [];
@@ -60,7 +60,7 @@ async function cleanCSVData(path) {
         }
 
         if (row[21] == "NA") {
-          year_created = "";
+          date_created = "";
         }
 
         if (row[22] == "NA") {
@@ -80,7 +80,9 @@ async function cleanCSVData(path) {
         }
 
         if (row[26] !== "NA") {
-          languages = row[26].split("|");
+          languages = [...new Set(row[26].split("|"))];
+
+          // Check all languages are unique
         }
 
         if (row[27] !== "NA") {
@@ -106,7 +108,7 @@ async function cleanCSVData(path) {
           contributors,
           digital_publisher,
           original_publisher,
-          year_created,
+          date_created,
           description,
           abstract,
           subject_lcsh,
