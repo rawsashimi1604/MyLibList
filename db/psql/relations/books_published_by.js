@@ -2,7 +2,7 @@ import db from "../config.js";
 
 function getAllBooks_Published_By() {
   try {
-    const query = `SELECT * FROM "books"`;
+    const query = `SELECT * FROM "books_published_by"`;
     return db.query(query);
   } catch (err) {
     console.log(err);
