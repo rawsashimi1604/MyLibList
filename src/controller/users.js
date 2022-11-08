@@ -7,7 +7,7 @@ function handleIndex(req, res) {
 
 async function handleAllUsers(req, res) {
   const database = res.locals.database;
-  const users = await database.relations.user.getAllUsers();
+  const users = await database.relations.users.getAllUsers();
   res.status(200).send(users.rows);
 }
 
@@ -15,7 +15,7 @@ async function handleAddUser(req, res) {
   console.log(req.body);
 
   const user = {
-    username: req.body["username"],
+    email: req.body["email"],
     password: req.body["password"],
   };
 
@@ -28,7 +28,8 @@ async function handleAddUser(req, res) {
     const hashedPassword = await bcrypt.hash(user.password, salt);
     user.password = hashedPassword;
 
-    const checkUserExists = await database.relations.user.checkUserExists(user);
+    const checkUserExists = await database.relations.users.checkUserExists(user);
+    console.log(checkUserExists)
 
     // If user already exists in database, cannot register.
     if (checkUserExists.rows.length > 0) {
@@ -37,7 +38,7 @@ async function handleAddUser(req, res) {
 
     // Else, register should be successful.
     else {
-      const userAdded = await database.relations.user.addUser(user);
+      const userAdded = await database.relations.users.addUser(user);
 
       // User was registered , success..
       res.status(200).send(userAdded.rows[0]);

@@ -22,19 +22,6 @@ CREATE TABLE IF NOT EXISTS "refresh_token"
   token VARCHAR(1000)
 );
 
-CREATE TABLE IF NOT EXISTS "vehicle"
-(
-  id BIGSERIAL PRIMARY KEY,
-  "name" TEXT
-);
-
--- Seed data into tables
-INSERT INTO vehicle("name")
-VALUES 
-('Audi'), 
-('Honda'), 
-('BMW');
-
 
 CREATE TABLE IF NOT EXISTS "users"(
     email VARCHAR(128) PRIMARY KEY,

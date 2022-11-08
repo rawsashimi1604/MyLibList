@@ -1,6 +1,6 @@
 import express from "express";
 
-import UserController from "../controller/user.js";
+import UsersController from "../controller/users.js";
 import injectDatabase from "../middleware/injectDatabase.js";
 import asyncErrorHandler from "../lib/utils/asyncErrorHandler.js";
 
@@ -11,9 +11,9 @@ export default function (database) {
   router.use((req, res, next) => injectDatabase(req, res, next, database));
 
   // Routes
-  router.get("/", UserController.handleIndex);
-  router.post("/", asyncErrorHandler(UserController.handleAddUser));
-  router.get("/all", asyncErrorHandler(UserController.handleAllUsers));
+  router.get("/", UsersController.handleIndex);
+  router.post("/", asyncErrorHandler(UsersController.handleAddUser));
+  router.get("/all", asyncErrorHandler(UsersController.handleAllUsers));
 
   return router;
 }
