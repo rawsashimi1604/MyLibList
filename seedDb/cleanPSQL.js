@@ -30,15 +30,15 @@ fs.createReadStream("../seedDb/csv_data/nlb_data.csv")
     let uri = row[1];
     let title = row[4];
     let alternative_titles = []
-    let contributor = []
+    let contributors = []
     let digital_publisher = row[18]
     let original_publisher = row[19]
     let year_created = row[21]
     let description = row[22]
     let abstract = row[23]
     let subject_lcsh = []
-    let subject = []
-    let language = []
+    let subjects = []
+    let languages = []
     let collections = []
     let nlb_type = row[28]
     let rights = row[29]
@@ -53,7 +53,13 @@ fs.createReadStream("../seedDb/csv_data/nlb_data.csv")
     }
 
     if(row[12] !== "NA"){
-        contributor = row[12].split("|");
+        const receiveContributors = row[12].split("|");
+        const contributorToAdd = {};
+        for(const contributor of receiveContributors){
+            contributorToAdd["contributor_type"] = contributor.split(":")[0];
+            contributorToAdd["contributor"] = contributor.split(":")[1];
+        }
+        contributors.push(contributorToAdd);
     }
 
     /*
@@ -95,11 +101,11 @@ fs.createReadStream("../seedDb/csv_data/nlb_data.csv")
     }
 
     if(row[25] !== "NA"){
-        subject = row[25].split("|")
+        subjects = row[25].split("|")
     }
 
     if(row[26] !== "NA"){
-        language = row[26].split("|")
+        languages = row[26].split("|")
     }
 
     if(row[27] !== "NA"){
@@ -118,8 +124,8 @@ fs.createReadStream("../seedDb/csv_data/nlb_data.csv")
         access_rights = ""
     }
     const cleanedDataRow = {
-      uuid, uri, title, alternative_titles, contributor, digital_publisher, original_publisher, year_created,
-      description, abstract, subject_lcsh, subject, language, collections,
+      uuid, uri, title, alternative_titles, contributors, digital_publisher, original_publisher, year_created,
+      description, abstract, subject_lcsh, subjects, languages, collections,
       nlb_type, rights, access_rights
     }
     cleanedData.push(cleanedDataRow)
