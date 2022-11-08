@@ -2,6 +2,7 @@ import cleanCSVData from "./cleanPSQL.js";
 import setupEnv from "../src/lib/utils/setupEnv.js";
 import databases from "../db/index.js";
 
+
 // Set up dotenv environment from .env file.
 setupEnv("../.env");
 
@@ -42,6 +43,33 @@ async function seedLanguages() {
   })
 }
 
+async function seedCollections() {
+
+  return new Promise(async (resolve, reject) => {
+    const allCollections = []
+
+    // Scan all languages in csv to database
+    for (const row of booksFromCSV) {
+
+      const collections = row.collections;
+
+      for (const collection of collections) {
+        if (!allCollections.includes(collection)) {
+          allCollections.push(collection);
+        }
+      }
+    }
+
+    for (const collection of allCollections) {
+      const collectionResult = await database.relations.collections.addCollection(collection);
+      console.log(collectionResult.rows[0]);
+    }
+
+    console.log("Collections seeded finish!")
+    resolve();
+  })
+}
+
 async function seedSubjects() {
 
   return new Promise(async (resolve, reject) => {
@@ -65,6 +93,33 @@ async function seedSubjects() {
     }
 
     console.log("Subjects seeded finish!")
+    resolve();
+  })
+}
+
+async function seedContributors() {
+
+  return new Promise(async (resolve, reject) => {
+    const allContributors = []
+
+    // Scan all subjects in csv to database
+    for (const row of booksFromCSV) {
+
+      const contributors = row.contributors;
+
+      for (const contributor of contributors) {
+        if (!allContributors.includes(contributor.contributor)) {
+          allContributors.push(contributor.contributor);
+        }
+      }
+    }
+    console.log(allContributors);
+    for (const contributor of allContributors) {
+      const contributorResult = await database.relations.contributors.addContributor(contributor);
+      console.log(contributorResult.rows[0]);
+    }
+
+    console.log("Contributors seeded finish!")
     resolve();
   })
 }
@@ -118,11 +173,8 @@ async function seedPublishers() {
           allPublishers.push(publisher);
         }
       }
-      console.log(original_publisher);
-      console.log(digital_publisher);
       
     }
-    console.log(allPublishers);
 
     for (const publisher of allPublishers) {
       const publisherResult = await database.relations.publishers.addPublisher(publisher);
@@ -229,6 +281,45 @@ async function seedBooks() {
         const bookPublisherResult = await database.relations.books_published_by.addBookPublishedBy(bookPublisherRelation)
         // console.log(booksLanguageResult.rows[0]);
       }
+
+      // Add books in collections
+      for (const bookCollection of book.collections) {
+        const collectionIDFromDB = await database.relations.collections.getCollectionIDByCollection(bookCollection);
+
+        const bookCollectionRelation = {
+          collection_id : collectionIDFromDB.rows[0].collection_id,
+          book_uuid : book.uuid
+        }
+
+        const booksCollectionResult = await database.relations.books_in_collections.addBookInCollections(bookCollectionRelation)
+        // console.log(booksSubjectResult.rows[0]);
+      }
+
+         // Add alternative titles 
+      for (const altTitle of book.alternative_titles) {
+          const altTitleRelation = {
+          alternative_title : altTitle,
+          book_uuid: book.uuid
+        }
+        console.log(altTitleRelation);
+        const altTitleResult = await database.relations.alternative_titles.addAltTitles(altTitleRelation)
+        // console.log(booksSubjectResult.rows[0]);
+      }
+
+      // Add books contributors
+      for (const bookContributor of book.contributors) {
+        const contributorIDFromDB = await database.relations.contributors.getContributorIDByContributor(bookContributor.contributor);
+
+        const bookContributorRelation = {
+          contributor_id : contributorIDFromDB.rows[0].contributor_id,
+          contributor_type : bookContributor.contributor_type,
+          book_uuid : book.uuid
+        }
+
+        const bookContributorResult = await database.relations.books_contributors.addBookContributor(bookContributorRelation)
+        // console.log(booksSubjectResult.rows[0]);
+      }
+
     
 
       console.log(`bookCounter: ${bookCounter}/${totalBooks}`);
@@ -247,7 +338,10 @@ await seedLanguages();
 await seedSubjects();
 await seedLCSH();
 await seedPublishers();
+await seedCollections();
+await seedContributors();
 await seedBooks();
+
 
 
 

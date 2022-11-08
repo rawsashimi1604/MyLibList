@@ -187,7 +187,7 @@ CREATE TABLE IF NOT EXISTS "books_in_collections"(
 
 CREATE TABLE IF NOT EXISTS "alternative_titles"( -- delete cascade
     alternative_title_id BIGSERIAL PRIMARY KEY,
-    alternate_title TEXT NOT NULL,
+    alternative_title TEXT NOT NULL,
     book_uuid TEXT,
     FOREIGN KEY (book_uuid)
         REFERENCES "books"(book_uuid)

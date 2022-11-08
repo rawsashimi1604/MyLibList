@@ -48,7 +48,10 @@ async function cleanCSVData(path) {
             contributorToAdd["contributor_type"] = contributor.split(":")[0];
             contributorToAdd["contributor"] = contributor.split(":")[1];
           }
-          contributors.push(contributorToAdd);
+          if(contributorToAdd.contributor_type && contributorToAdd.contributor){
+            
+            contributors.push(contributorToAdd);
+          }
         }
 
         if (row[18] !== "NA") {

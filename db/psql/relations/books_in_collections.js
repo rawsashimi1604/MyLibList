@@ -15,7 +15,7 @@ function addBookInCollections(booksInCollections) {
         const query = `INSERT INTO "books_in_collections"(
         collection_id,
         book_uuid
-    ) VALUES ($1, $2)`;
+    ) VALUES ($1, $2) RETURNING *` ;
 
         const params = [
             booksInCollections.collection_id,

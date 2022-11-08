@@ -10,16 +10,32 @@ function getAllCollections() {
     }
 }
 
+function getCollectionIDByCollection(collection) {
+    try {
+      const query = `
+        SELECT collection_id FROM "collections"
+        WHERE collection_title = $1;
+      `;
+  
+      const params = [
+        collection
+      ]
+      
+      return db.query(query, params);
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
+  }
+
 function addCollection(collection) {
     try {
         const query = `INSERT INTO "collections"(
-        collection_id,
         collection_title
-    ) VALUES ($1, $2)`;
+    ) VALUES ($1) RETURNING *`;
 
         const params = [
-            collection.collection_id,
-            collection.collection_title,
+            collection,
         ]
 
         return db.query(query, params);
@@ -29,4 +45,4 @@ function addCollection(collection) {
     }
 }
 
-export default { getAllCollections, addCollection };
+export default { getAllCollections, addCollection, getCollectionIDByCollection };

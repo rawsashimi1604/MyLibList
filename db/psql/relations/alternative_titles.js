@@ -13,14 +13,12 @@ function getAllAltTitles() {
 function addAltTitles(altTitles) {
     try {
         const query = `INSERT INTO "alternative_titles"(
-        alternative_title_id,
-        alternate_title,
+        alternative_title,
         book_uuid
-    ) VALUES ($1, $2, $3)`;
+    ) VALUES ($1, $2) RETURNING *`;
 
         const params = [
-            altTitles.alternative_title_id,
-            altTitles.alternate_title,
+            altTitles.alternative_title,
             altTitles.book_uuid,
         ]
 
