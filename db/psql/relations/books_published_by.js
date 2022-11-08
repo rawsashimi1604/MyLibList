@@ -16,7 +16,7 @@ function addBook_Published_By(book_published_by) {
         publisher_type,
         publisher_id,
         book_uuid
-    ) VALUES ($1, $2)`;
+    ) VALUES ($1, $2, $3)`;
 
     const params = [
       book_published_by.publisher_type,

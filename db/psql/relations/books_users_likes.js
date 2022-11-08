@@ -15,15 +15,13 @@ function addBookUsersLikes(book) {
     const query = `INSERT INTO "book_users_likes"(
       email,
       book_uuid,
-      page,
-      timestamp_bookmarked
+      timestamp_liked
     ) VALUES ($1, $2, $3)`;
 
     const params = [
       book.email,
       book.book_uuid,
-      book.page,
-      book.timestamp_bookmarked,
+      book.timestamp_liked,
     ]
     
     return db.query(query, params);
