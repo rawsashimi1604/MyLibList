@@ -10,6 +10,17 @@ function getAllVehicles() {
   }
 }
 
+function getVehicle(id) {
+  try {
+    const query = "SELECT * FROM vehicle WHERE id = $1";
+    const params = [id];
+    return db.query(query, params);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
 function addVehicle(vehicle) {
   try {
     const query = "INSERT INTO vehicle(name) VALUES ($1) RETURNING *";
@@ -32,4 +43,4 @@ function deleteVehicleByID(id) {
   }
 }
 
-export default { getAllVehicles, addVehicle, deleteVehicleByID };
+export default { getVehicle, getAllVehicles, addVehicle, deleteVehicleByID };
