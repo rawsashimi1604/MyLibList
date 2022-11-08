@@ -8,7 +8,7 @@ const vehicle = VehicleRelation;
 const user = UserRelation;
 const refresh_token = RefreshTokenRelation;
 
-const alternativeTitles = AlternativeTitlesRelation;
+const alternative_titles = AlternativeTitlesRelation;
 
 
 export default {
