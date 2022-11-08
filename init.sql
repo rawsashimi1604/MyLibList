@@ -38,27 +38,28 @@ VALUES
 
 CREATE TABLE IF NOT EXISTS "users"(
     email VARCHAR(128) PRIMARY KEY,
-    date_registered DATETIME NOT NULL,
+    password VARCHAR(64) NOT NULL,
+    timestamp_registered TIMESTAMP WITH TIME ZONE NOT NULL,
     access_role VARCHAR(256) NOT NULL,
     first_name VARCHAR(64) NOT NULL,
     last_name VARCHAR(64) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS "books"( -- Check excel file after for data type
-    book_uuid UUID PRIMARY KEY
+    book_uuid UUID PRIMARY KEY,
     access_rights TEXT,
     rights TEXT,
     abstract TEXT,
     title TEXT,
     uri TEXT,
-    date_created DATETIME,
+    date_created TEXT,
     description TEXT
 );
 
 CREATE TABLE IF NOT EXISTS "reading_lists"( -- on delete cascade
     reading_list_id BIGSERIAL PRIMARY KEY,
     name VARCHAR(256) NOT NULL,
-    created_on DATETIME NOT NULL,
+    timestamp_created_on TIMESTAMP WITH TIME ZONE NOT NULL,
     email VARCHAR(128),
     FOREIGN KEY (email) 
         REFERENCES "users"(email) 
@@ -68,7 +69,7 @@ CREATE TABLE IF NOT EXISTS "reading_lists"( -- on delete cascade
 CREATE TABLE IF NOT EXISTS "books_lists"(
     reading_list_id BIGSERIAL,
     book_uuid UUID,
-    timestamp DATETIME NOT NULL,
+    timestamp_created_on TIMESTAMP WITH TIME ZONE NOT NULL,
     FOREIGN KEY (reading_list_id) 
         REFERENCES "reading_lists"(reading_list_id)
         ON DELETE CASCADE,
@@ -81,7 +82,7 @@ CREATE TABLE IF NOT EXISTS "books_lists"(
 CREATE TABLE IF NOT EXISTS "books_users_likes"( 
     email VARCHAR(128),
     book_uuid UUID,
-    timestamp DATETIME,
+    timestamp_liked TIMESTAMP WITH TIME ZONE,
     FOREIGN KEY(email)
         REFERENCES "users"(email)
         ON DELETE CASCADE,
@@ -95,7 +96,7 @@ CREATE TABLE IF NOT EXISTS "users_bookmarks"(
     email VARCHAR(128),
     book_uuid UUID,
     page INT NOT NULL,
-    timestamp DATETIME NOT NULL,
+    timestamp_bookmarked TIMESTAMP WITH TIME ZONE NOT NULL,
     FOREIGN KEY(email)
         REFERENCES "users"(email)
         ON DELETE CASCADE,

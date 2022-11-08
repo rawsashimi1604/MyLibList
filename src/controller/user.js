@@ -12,6 +12,8 @@ async function handleAllUsers(req, res) {
 }
 
 async function handleAddUser(req, res) {
+  console.log(req.body);
+
   const user = {
     username: req.body["username"],
     password: req.body["password"],

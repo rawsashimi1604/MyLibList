@@ -7,6 +7,7 @@ export default function validateUser(userObject) {
   if (!userObject["password"]) return false;
 
   // Check if password length is at least 6 characters long
+  if (userObject.username.length > 16) return false;
   if (userObject.password.length < 6) return false;
 
   // Check was successful.

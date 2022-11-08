@@ -3,7 +3,7 @@
 This is our server component for our project for module **ICT2103 Information Management** . It includes a REST API (Client-Server Architecture) using various `GET`, `POST`, `PUT` and `DELETE` routes. The project is also Dockerized to be run in any environment.
 
 | StudentID | GithubHandle   | Name              |
-|-----------|----------------|-------------------|
+| --------- | -------------- | ----------------- |
 | 2101927   | rawsashimi1604 | Gavin Loo Wei Ren |
 | 2101391   | jianweiiii     | Lim Jian Wei      |
 | 2100701   | irfaan96       | Irfaan            |
