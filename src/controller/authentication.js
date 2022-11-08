@@ -4,7 +4,7 @@ import generateAccessToken from "../lib/authentication/generateAccessToken.js";
 import bcrypt from "bcrypt";
 
 function handleIndex(req, res) {
-  res.send("Authentication route...");
+  res.send("handle auth index");
 }
 
 async function handleUserLogin(req, res) {
@@ -68,6 +68,7 @@ async function handleUserLogout(req, res) {
   // Remove refresh token from database
   // User is now not authenticated...
 
+  const database = res.locals.database;
   const refreshToken = req.body.token;
 
   // No token received from client
@@ -75,8 +76,16 @@ async function handleUserLogout(req, res) {
     return res.sendStatus(400);
   }
 
+  // Check if token exists
+  const checkRefreshTokenExists =
+    await database.relations.refresh_token.checkTokenExists(refreshToken);
+    
+  // No token exists, user is not logged in
+  if (checkRefreshTokenExists.rows.length === 0) {
+    return res.sendStatus(400);
+  }
+
   // Remove token from database
-  const database = res.locals.database;
   const deleteTokenResult = await database.relations.refresh_token.deleteToken(
     refreshToken
   );

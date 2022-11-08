@@ -3,6 +3,7 @@ import express from "express";
 import UsersController from "../controller/users.js";
 import injectDatabase from "../middleware/injectDatabase.js";
 import asyncErrorHandler from "../lib/utils/asyncErrorHandler.js";
+import { authenticateToken } from "../middleware/authenticateToken.js";
 
 export default function (database) {
   const router = express.Router();
@@ -13,7 +14,7 @@ export default function (database) {
   // Routes
   router.get("/", UsersController.handleIndex);
   router.post("/", asyncErrorHandler(UsersController.handleAddUser));
-  router.get("/all", asyncErrorHandler(UsersController.handleAllUsers));
+  router.get("/all", authenticateToken, asyncErrorHandler(UsersController.handleAllUsers));
 
   return router;
 }
