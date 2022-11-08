@@ -101,24 +101,35 @@ async function seedPublishers() {
   return new Promise(async (resolve, reject) => {
     const allPublishers = []
 
+
     // Scan all subjects in csv to database
     for (const row of booksFromCSV) {
 
-      const subjects = row.subjects;
+      const original_publisher = row.original_publisher;
+      const digital_publisher = row.digital_publisher;
 
-      for (const subject of subjects) {
-        if (!allSubjects.includes(subject)) {
-          allSubjects.push(subject);
+      for (const publisher of original_publisher) {
+        if (!allPublishers.includes(publisher)) {
+          allPublishers.push(publisher);
         }
       }
+      for (const publisher of digital_publisher) {
+        if (!allPublishers.includes(publisher)) {
+          allPublishers.push(publisher);
+        }
+      }
+      console.log(original_publisher);
+      console.log(digital_publisher);
+      
+    }
+    console.log(allPublishers);
+
+    for (const publisher of allPublishers) {
+      const publisherResult = await database.relations.publishers.addPublisher(publisher);
+      console.log(publisherResult.rows[0]);
     }
 
-    for (const subject of allSubjects) {
-      const subjectResult = await database.relations.subjects.addSubjects(subject);
-      console.log(subjectResult.rows[0]);
-    }
-
-    console.log("Subjects seeded finish!")
+    console.log("Publisher seeded finish!")
     resolve();
   })
 }
@@ -163,6 +174,8 @@ async function seedBooks() {
         // console.log(booksLanguageResult.rows[0]);
       }
 
+      
+
       // Add books_subjects
       for (const bookSubject of book.subjects) {
         const subjectIDFromDB = await database.relations.subjects.getSubjectIdBySubject(bookSubject);
@@ -189,6 +202,35 @@ async function seedBooks() {
         // console.log(booksSubjectResult.rows[0]);
       }
 
+       // Add books_published_by (digital)
+       for (const bookPublishedBy of book.digital_publisher) {
+        const bookPublisherID = await database.relations.publishers.getPublishedByIDByPublisher(bookPublishedBy);
+
+        const bookPublisherRelation = {
+          publisher_type: "Digital",
+          publisher_id: bookPublisherID.rows[0].publisher_id,
+          book_uuid: book.uuid
+        };
+
+        const bookPublisherResult = await database.relations.books_published_by.addBookPublishedBy(bookPublisherRelation)
+        // console.log(booksLanguageResult.rows[0]);
+      }
+
+      // Add books_published_by (original)
+      for (const bookPublishedBy of book.original_publisher) {
+        const bookPublisherID = await database.relations.publishers.getPublishedByIDByPublisher(bookPublishedBy);
+
+        const bookPublisherRelation = {
+          publisher_type: "Original",
+          publisher_id: bookPublisherID.rows[0].publisher_id,
+          book_uuid: book.uuid
+        };
+
+        const bookPublisherResult = await database.relations.books_published_by.addBookPublishedBy(bookPublisherRelation)
+        // console.log(booksLanguageResult.rows[0]);
+      }
+    
+
       console.log(`bookCounter: ${bookCounter}/${totalBooks}`);
       }
       bookCounter++;
@@ -204,7 +246,9 @@ async function seedBooks() {
 await seedLanguages();
 await seedSubjects();
 await seedLCSH();
+await seedPublishers();
 await seedBooks();
+
 
 
 console.log("\n\n\nSCRIPT HAS FINISHED.......\n\n\n")

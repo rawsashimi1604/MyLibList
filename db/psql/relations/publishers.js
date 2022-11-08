@@ -10,14 +10,31 @@ function getAllPublishers() {
   }
 }
 
+function getPublishedByIDByPublisher(publisher) {
+  try {
+    const query = `
+      SELECT publisher_id FROM "publishers"
+      WHERE publisher = $1;
+    `;
+
+    const params = [
+      publisher
+    ]
+    
+    return db.query(query, params);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
 function addPublisher(publisher) {
   try {
     const query = `INSERT INTO "publishers"(
-        publisher_id,
         publisher
-    ) VALUES ($1, $2)`;
+    ) VALUES ($1) RETURNING *` ;
 
-    const params = [publisher.publisher_id, publisher.publisher_id];
+    const params = [publisher];
 
     return db.query(query, params);
   } catch (err) {
@@ -26,4 +43,4 @@ function addPublisher(publisher) {
   }
 }
 
-export default { getAllPublishers, addPublisher };
+export default { getAllPublishers, addPublisher, getPublishedByIDByPublisher };

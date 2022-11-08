@@ -20,8 +20,8 @@ async function cleanCSVData(path) {
         let title = row[4];
         let alternative_titles = [];
         let contributors = [];
-        let digital_publisher = row[18];
-        let original_publisher = row[19];
+        let digital_publisher = [];
+        let original_publisher = [];
         let date_created = row[21];
         let description = row[22];
         let abstract = row[23];
@@ -51,12 +51,12 @@ async function cleanCSVData(path) {
           contributors.push(contributorToAdd);
         }
 
-        if (row[18] == "NA") {
-          digital_publisher = "";
+        if (row[18] !== "NA") {
+          digital_publisher = row[18].split("|");
         }
 
         if (row[19] == "NA") {
-          original_publisher = "";
+          original_publisher = row[19].split("|");
         }
 
         if (row[21] == "NA") {

@@ -1,6 +1,6 @@
 import db from "../config.js";
 
-function getAllBooks_Published_By() {
+function getAllBooksPublishedBy() {
   try {
     const query = `SELECT * FROM "books_published_by"`;
     return db.query(query);
@@ -10,7 +10,7 @@ function getAllBooks_Published_By() {
   }
 }
 
-function addBook_Published_By(book_published_by) {
+function addBookPublishedBy(bookPublishedBy) {
   try {
     const query = `INSERT INTO "books_published_by"(
         publisher_type,
@@ -19,9 +19,9 @@ function addBook_Published_By(book_published_by) {
     ) VALUES ($1, $2, $3)`;
 
     const params = [
-      book_published_by.publisher_type,
-      book_published_by.publisher_id,
-      book_published_by.book_uuid,
+      bookPublishedBy.publisher_type,
+      bookPublishedBy.publisher_id,
+      bookPublishedBy.book_uuid,
     ];
 
     return db.query(query, params);
@@ -31,4 +31,4 @@ function addBook_Published_By(book_published_by) {
   }
 }
 
-export default { getAllBooks_Published_By, addBook_Published_By };
+export default { getAllBooksPublishedBy, addBookPublishedBy };
