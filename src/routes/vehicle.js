@@ -12,11 +12,12 @@ export default function (database) {
   router.use((req, res, next) => injectDatabase(req, res, next, database));
 
   // Authenticate user before they are able to get vehicle data...
-  router.use(authenticateToken);
+  // router.use(authenticateToken);
 
   // Routes
   router.get("/", VehicleController.handleIndex);
   router.get("/all", asyncErrorHandler(VehicleController.handleAllVehicles));
+  router.get("/:id", asyncErrorHandler(VehicleController.handleVehicle));
   router.post("/", asyncErrorHandler(VehicleController.handleAddVehicle));
   router.delete(
     "/:id",

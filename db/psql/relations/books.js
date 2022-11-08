@@ -21,7 +21,7 @@ function addBook(book) {
       uri,
       date_created,
       description
-    )" VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`;
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`;
 
     const params = [
       book.book_uuid,

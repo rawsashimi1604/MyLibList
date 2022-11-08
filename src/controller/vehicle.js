@@ -12,6 +12,14 @@ async function handleAllVehicles(req, res) {
   res.status(200).send(vehicles.rows);
 }
 
+async function handleVehicle(req, res) {
+  // Database object passed from middleware...
+  const { id } = req.params;
+  const database = res.locals.database;
+  const vehicles = await database.relations.vehicle.getVehicle(id);
+  res.status(200).send(vehicles.rows);
+}
+
 async function handleAddVehicle(req, res) {
   const vehicle = req.body;
 
@@ -52,6 +60,7 @@ async function handleDeleteVehicle(req, res) {
 export default {
   handleIndex,
   handleAllVehicles,
+  handleVehicle,
   handleAddVehicle,
   handleDeleteVehicle,
 };
