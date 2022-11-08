@@ -56,6 +56,20 @@ fs.createReadStream("../seedDb/csv_data/nlb_data.csv")
         contributor = row[12].split("|");
     }
 
+    /*
+        Owner:Meridian Junior College|Lender:Meridian Junior College
+        contributors: [
+            {
+                contributor_type: "Owner"
+                contributor: "Meridian Junior College"
+            },
+            {
+                contributor_type: "Lender"
+                contributor: "Meridian Junior College"
+            },
+        ]
+    */
+
     if(row[18] == "NA"){
         digital_publisher = ""
     }
