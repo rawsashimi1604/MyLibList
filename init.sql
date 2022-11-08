@@ -118,7 +118,7 @@ CREATE TABLE IF NOT EXISTS "books_users_status"(
         REFERENCES "books"(book_uuid)
         ON DELETE CASCADE,    
     PRIMARY KEY (email,book_uuid)
-)
+);
 
 CREATE TABLE IF NOT EXISTS "languages"(
     language_id BIGSERIAL PRIMARY KEY,
