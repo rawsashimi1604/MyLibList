@@ -30,4 +30,19 @@ function addReadingList(readingList) {
   }
 }
 
-export default { getAllReadingList, addReadingList };
+function getReadingListByID(readingListID) {
+  try {
+    const query = `SELECT * FROM "reading_lists" WHERE reading_list_id = $1`;
+
+    const params = [
+      readingListID
+    ];
+
+    return db.query(query, params);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
+export default { getAllReadingList, addReadingList, getReadingListByID };

@@ -12,7 +12,7 @@ export default function (database) {
   router.use((req, res, next) => injectDatabase(req, res, next, database));
 
   // Routes
-  router.get("/", asyncErrorHandler(ReadingListsController.handleIndex));
+  router.get("/:readingListID", asyncErrorHandler(ReadingListsController.handleGetSpecificReadingList));
   router.get(
     "/all",
     asyncErrorHandler(ReadingListsController.handleAllReadingList)

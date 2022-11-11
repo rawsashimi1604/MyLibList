@@ -1,8 +1,37 @@
 import validateAddReadingList from "../lib/readingLists/validateAddReadingList.js";
+import validateNumberReceived from "../lib/utils/validateNumberReceived.js";
 import getCurrentTimestamp from "../lib/utils/getCurrentTimestamp.js"
 
-async function handleIndex(req, res) {
-  res.send("reading list route single data...");
+async function handleGetSpecificReadingList(req, res) {
+  // Check whetehr client sent a request to a route with valid BIGSERIAL parameter
+  const readingListID = req.params.readingListID;
+
+  // Not a valid condition ! we did not receive a positive number 
+  if(!(validateNumberReceived && Number(readingListID) > 0)) {
+    res.status(400).send({
+        error: "Received invalid input from client"
+    })
+    return;
+  }
+  
+  // Valid condition ! we received a positive number 
+  // Check the database for the reading list
+  const database = res.locals.database;
+  const getReadingListByIDResult = await database.relations.reading_lists.getReadingListByID(readingListID);
+
+  if (getReadingListByIDResult.rows.length >= 1) {
+    res.status(200).send({
+        reading_list: getReadingListByIDResult.rows[0],
+        message: `Successfully get reading list using ID: ${readingListID}.`
+    })
+    return;
+  }
+
+  // if no readinglist was found send a 400 error
+  res.status(400).send({
+    error: `Could not find a reading list using ID: ${readingListID}.`
+  })
+  return;
 }
 
 async function handleAllReadingList(req, res) {
@@ -17,6 +46,10 @@ async function handleAddReadingList(req, res) {
         email: req.body["email"],
         name: req.body["name"]
     }
+
+    // GET POST PUT DELETE
+    // GET -> you dont send any body
+    // POST PUT DELETE -> you send body
 
     // Check whether we received valid data!
     // For example what if they did not give the email? then we cant proceed
@@ -71,7 +104,7 @@ async function handleDeleteBookFromReadingList(req, res) {
 }
 
 export default {
-  handleIndex,
+  handleGetSpecificReadingList,
   handleAllReadingList,
   handleAddReadingList,
   handleDeleteReadingList,
