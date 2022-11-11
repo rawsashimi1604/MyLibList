@@ -43,4 +43,29 @@ function addBook(book) {
   }
 }
 
-export default { getAllBooks, addBook };
+function deleteBookByID(bookUUID){
+  try{
+    const query = `DELETE FROM "books" WHERE book_uuid = $1 RETURNING *`;
+
+    const params = [
+      bookUUID
+    ];
+    return db.query(query,params);
+  } catch(err){
+    console.log(err);
+    throw err;
+  }
+}
+
+function checkBookExists(bookUUID){
+  try{
+    const query = `SELECT 1 FROM "books" WHERE book_uuid = $1`;
+    const params = [bookUUID];
+    return db.query(query,params);
+  }catch (err){
+    console.log(err);
+    throw err;
+  }
+}
+
+export default { getAllBooks, addBook , deleteBookByID, checkBookExists};
