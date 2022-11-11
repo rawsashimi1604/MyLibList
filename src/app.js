@@ -4,6 +4,7 @@ import setupEnv from "./lib/utils/setupEnv.js";
 // Router imports
 import makeAuthRouter from "./routes/authentication.js";
 import makeUsersRouter from "./routes/users.js";
+import makeBooksRouter from "./routes/books.js";
 
 // Middleware imports
 import morgan from "morgan";
@@ -38,6 +39,7 @@ export default function (database) {
   // Routes
   app.use("/api/auth", makeAuthRouter(database));
   app.use("/api/user", makeUsersRouter(database));
+  app.use("/api/book", makeBooksRouter(database));
 
   // Default Route
   app.get("/", (req, res) => {

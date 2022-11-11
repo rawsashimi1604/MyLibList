@@ -196,7 +196,7 @@ async function seedBooks() {
     // Add books
     for (const book of booksFromCSV) {
 
-      if (bookCounter >= 37000) {
+      if (bookCounter >= 39000) {
 
       
       const booksRelation = {
