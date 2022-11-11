@@ -1,3 +1,7 @@
+async function handleRegisterUser(req, res){
+  res.send("Hit Post /api/user ...");
+}
+
 async function handleGetUserData(req, res){
   res.send("User route...");
 }
@@ -26,6 +30,7 @@ async function handleGetBookStatus(req, res){
 
 
 export default{
+  handleRegisterUser,
   handleGetUserData,
   handleChangePassword,
   handleDeleteUser,

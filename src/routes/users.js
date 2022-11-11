@@ -12,7 +12,8 @@ export default function (database) {
   router.use((req, res, next) => injectDatabase(req, res, next, database));
 
   // Routes
-  router.get("/", asyncErrorHandler(UsersController.handleGetUserData));
+  router.post("/", asyncErrorHandler(UsersController.handleRegisterUser))
+  router.get("/", asyncErrorHandler(UsersController.handleGetUserData))
   router.put("/changePassword", asyncErrorHandler(UsersController.handleChangePassword))
   router.delete("/", asyncErrorHandler(UsersController.handleDeleteUser))
   router.get("/likedBooks", asyncErrorHandler(UsersController.handleGetLikeBooks))
