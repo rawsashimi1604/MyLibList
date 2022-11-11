@@ -1,9 +1,9 @@
 import express from "express";
 
-import UsersController from "../controller/users.js";
 import injectDatabase from "../middleware/injectDatabase.js";
 import asyncErrorHandler from "../lib/utils/asyncErrorHandler.js";
 import { authenticateToken } from "../middleware/authenticateToken.js";
+import UsersController from "../controller/users.js";
 
 export default function (database) {
   const router = express.Router();
@@ -12,9 +12,12 @@ export default function (database) {
   router.use((req, res, next) => injectDatabase(req, res, next, database));
 
   // Routes
-  router.get("/", UsersController.handleIndex);
-  router.post("/", asyncErrorHandler(UsersController.handleAddUser));
-  router.get("/all", authenticateToken, asyncErrorHandler(UsersController.handleAllUsers));
+  router.get("/", asyncErrorHandler(UsersController.handleGetUserData));
+  router.put("/changePassword", asyncErrorHandler(UsersController.handleChangePassword))
+  router.delete("/", asyncErrorHandler(UsersController.handleDeleteUser))
+  router.get("/likedBooks", asyncErrorHandler(UsersController.handleGetLikeBooks))
+  router.get("/bookmark", asyncErrorHandler(UsersController.handleGetBookmark))
+  router.get("/bookStatus", asyncErrorHandler(UsersController.handleGetBookStatus))
 
   return router;
 }
