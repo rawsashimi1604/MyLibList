@@ -34,8 +34,8 @@ function addBook(book) {
       book.uri,
       book.date_created,
       book.description,
-    ]
-    
+    ];
+
     return db.query(query, params);
   } catch (err) {
     console.log(err);

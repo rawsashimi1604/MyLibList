@@ -24,8 +24,8 @@ function addBookUserStatus(book) {
       book.book_uuid,
       book.status,
       book.timestamp_updated,
-    ]
-    
+    ];
+
     return db.query(query, params);
   } catch (err) {
     console.log(err);

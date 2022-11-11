@@ -17,10 +17,8 @@ function getLanguageIdByLanguage(language) {
       WHERE language = $1;
     `;
 
-    const params = [
-      language
-    ]
-    
+    const params = [language];
+
     return db.query(query, params);
   } catch (err) {
     console.log(err);
@@ -34,10 +32,8 @@ function addLanguages(language) {
       language
     ) VALUES ($1) RETURNING *`;
 
-    const params = [
-      language
-    ]
-    
+    const params = [language];
+
     return db.query(query, params);
   } catch (err) {
     console.log(err);

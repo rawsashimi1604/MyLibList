@@ -17,10 +17,8 @@ function getPublishedByIDByPublisher(publisher) {
       WHERE publisher = $1;
     `;
 
-    const params = [
-      publisher
-    ]
-    
+    const params = [publisher];
+
     return db.query(query, params);
   } catch (err) {
     console.log(err);
@@ -32,7 +30,7 @@ function addPublisher(publisher) {
   try {
     const query = `INSERT INTO "publishers"(
         publisher
-    ) VALUES ($1) RETURNING *` ;
+    ) VALUES ($1) RETURNING *`;
 
     const params = [publisher];
 

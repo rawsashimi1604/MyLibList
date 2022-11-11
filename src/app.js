@@ -5,7 +5,7 @@ import setupEnv from "./lib/utils/setupEnv.js";
 import makeAuthRouter from "./routes/authentication.js";
 import makeUsersRouter from "./routes/users.js";
 import makeBooksRouter from "./routes/books.js";
-import makeReadingListsRouter from "./routes/readingLists.js"
+import makeReadingListsRouter from "./routes/readingLists.js";
 
 // Middleware imports
 import morgan from "morgan";

@@ -20,7 +20,6 @@ import ReadingListsRelation from "./reading_lists.js";
 import SubjectsRelation from "./subjects.js";
 import UsersBookmarksRelation from "./users_bookmarks.js";
 
-
 const users = UserRelation;
 const refresh_token = RefreshTokenRelation;
 

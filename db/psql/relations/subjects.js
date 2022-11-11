@@ -17,10 +17,8 @@ function getSubjectIdBySubject(subject) {
       WHERE subject_title = $1;
     `;
 
-    const params = [
-      subject
-    ]
-    
+    const params = [subject];
+
     return db.query(query, params);
   } catch (err) {
     console.log(err);

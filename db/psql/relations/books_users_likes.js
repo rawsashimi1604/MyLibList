@@ -18,12 +18,8 @@ function addBookUsersLikes(book) {
       timestamp_liked
     ) VALUES ($1, $2, $3)`;
 
-    const params = [
-      book.email,
-      book.book_uuid,
-      book.timestamp_liked,
-    ]
-    
+    const params = [book.email, book.book_uuid, book.timestamp_liked];
+
     return db.query(query, params);
   } catch (err) {
     console.log(err);

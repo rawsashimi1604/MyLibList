@@ -17,10 +17,8 @@ function getLCSHIdByLCSH(lcsh) {
       WHERE lcsh_tag = $1;
     `;
 
-    const params = [
-      lcsh
-    ]
-    
+    const params = [lcsh];
+
     return db.query(query, params);
   } catch (err) {
     console.log(err);

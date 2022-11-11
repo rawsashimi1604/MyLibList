@@ -7,7 +7,6 @@ import { parse } from "csv-parse";
 setupEnv("../../.env");
 
 async function cleanCSVData(path) {
-
   const cleanedData = [];
 
   return new Promise((resolve, reject) => {
@@ -48,8 +47,10 @@ async function cleanCSVData(path) {
             contributorToAdd["contributor_type"] = contributor.split(":")[0];
             contributorToAdd["contributor"] = contributor.split(":")[1];
           }
-          if(contributorToAdd.contributor_type && contributorToAdd.contributor){
-            
+          if (
+            contributorToAdd.contributor_type &&
+            contributorToAdd.contributor
+          ) {
             contributors.push(contributorToAdd);
           }
         }
@@ -127,7 +128,7 @@ async function cleanCSVData(path) {
 
       .on("end", function () {
         console.log("finished");
-        resolve(cleanedData)
+        resolve(cleanedData);
       })
       .on("error", function (error) {
         console.log(error.message);
