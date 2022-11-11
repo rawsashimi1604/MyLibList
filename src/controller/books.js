@@ -29,7 +29,6 @@ async function handleDeleteBook(req, res) {
       })
       return;
     }
-    console.log(deleteBookResult);
 }
 
 async function handleUpdateBookmark(req, res) {
