@@ -25,7 +25,8 @@ async function handleDeleteBook(req, res) {
     const deleteBookResult = await database.relations.books.deleteBookByID(bookUUID);
     if(deleteBookResult.rows.length >= 1){
       res.status(200).send({
-        book: deleteBookResult.rows[0],
+        book_uuid: deleteBookResult.rows[0].book_uuid,
+        book_title: deleteBookResult.rows[0].title,
         message: `Successfully deleted book UUID: ${bookUUID}`
       })
       return;
