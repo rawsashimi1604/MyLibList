@@ -70,8 +70,7 @@ async function handleAddLike(req, res) {
   likeBookData["timestamp_liked"] = getCurrentTimestamp();
 
   const addBookLikeResult = await database.relations.books_users_likes.addBookUsersLikes(likeBookData);
-  console.log(likeBookData);
-  console.log(addBookLikeResult);
+
   if(addBookLikeResult.rowCount >= 1){
     res.status(200).send({
       email: `${likeBookData.email}`,
