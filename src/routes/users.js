@@ -23,9 +23,12 @@ export default function (database) {
     "/likedBooks",
     asyncErrorHandler(UsersController.handleGetLikeBooks)
   );
-  router.get("/bookmark", asyncErrorHandler(UsersController.handleGetBookmark));
   router.get(
-    "/bookStatus",
+    "/bookmark/:bookUUID",
+    asyncErrorHandler(UsersController.handleGetBookmark)
+  );
+  router.get(
+    "/bookStatus/:bookUUID",
     asyncErrorHandler(UsersController.handleGetBookStatus)
   );
 

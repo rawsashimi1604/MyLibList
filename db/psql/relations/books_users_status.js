@@ -10,6 +10,17 @@ function getAllBookUserStatus() {
   }
 }
 
+function getBookUserStatusByID(book_uuid) {
+  try {
+    const query = `SELECT * FROM "books_users_status" WHERE book_uuid = $2`;
+    const params = [book_uuid];
+    return db.query(query, params);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
 function addBookUserStatus(book) {
   try {
     const query = `INSERT INTO "books_users_status"(
@@ -33,4 +44,8 @@ function addBookUserStatus(book) {
   }
 }
 
-export default { getAllBookUserStatus, addBookUserStatus };
+export default {
+  getAllBookUserStatus,
+  getBookUserStatusByID,
+  addBookUserStatus,
+};
