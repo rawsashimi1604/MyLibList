@@ -158,7 +158,6 @@ async function handleGetLikeBooks(req, res) {
   const database = res.locals.database;
   const getLikeBooksResult =
     await database.relations.books_users_likes.getAllBooksUsersLikes();
-  console.log(getLikeBooksResult);
   if (getLikeBooksResult.rows.length >= 1) {
     res.status(200).send({
       books_users_likes: getLikeBooksResult.rows[0],

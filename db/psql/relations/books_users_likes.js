@@ -2,7 +2,7 @@ import db from "../config.js";
 
 function getAllBooksUsersLikes() {
   try {
-    const query = `SELECT * FROM "book_users_likes"`;
+    const query = `SELECT * FROM "books_users_likes"`;
     return db.query(query);
   } catch (err) {
     console.log(err);
@@ -27,12 +27,12 @@ function addBookUsersLikes(book) {
   }
 }
 
-function checkIfBookIsLiked(user,book){
-  try{
+function checkIfBookIsLiked(user, book) {
+  try {
     const query = `SELECT * FROM "books_users_likes" WHERE email = $1 AND book_uuid = $2`;
-    const params = [user,book];
-    return db.query(query,params);
-  }catch (err){
+    const params = [user, book];
+    return db.query(query, params);
+  } catch (err) {
     console.log(err);
     throw err;
   }
