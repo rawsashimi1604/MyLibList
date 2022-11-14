@@ -1,5 +1,5 @@
 import validateAddReadingList from "../lib/readingLists/validateAddReadingList.js";
-import validateDeleteReadingList from "../lib/readingLists/validateDeleteReadingList";
+import validateDeleteReadingList from "../lib/readingLists/validateDeleteReadingList.js";
 import validateAddBookToReadingList from "../lib/readingLists/validateAddBookToReadingList.js";
 import validateNumberReceived from "../lib/utils/validateNumberReceived.js";
 import getCurrentTimestamp from "../lib/utils/getCurrentTimestamp.js";
