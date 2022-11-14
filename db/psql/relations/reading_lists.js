@@ -34,9 +34,7 @@ function getReadingListByID(readingListID) {
   try {
     const query = `SELECT * FROM "reading_lists" WHERE reading_list_id = $1`;
 
-    const params = [
-      readingListID
-    ];
+    const params = [readingListID];
 
     return db.query(query, params);
   } catch (err) {
@@ -45,4 +43,20 @@ function getReadingListByID(readingListID) {
   }
 }
 
-export default { getAllReadingList, addReadingList, getReadingListByID };
+function deleteReadingListByID(reading_list_id) {
+  try {
+    const query = `DELETE FROM "reading_lists" WHERE reading_list_id = $1 RETURNING *`;
+    const params = [reading_list_id];
+    return db.query(query, params);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
+export default {
+  getAllReadingList,
+  addReadingList,
+  getReadingListByID,
+  deleteReadingListByID,
+};
