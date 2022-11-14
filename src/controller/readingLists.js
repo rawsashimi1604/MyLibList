@@ -1,4 +1,5 @@
 import validateAddReadingList from "../lib/readingLists/validateAddReadingList.js";
+import validateAddBookToReadingList from "../lib/readingLists/validateAddBookToReadingList.js";
 import validateNumberReceived from "../lib/utils/validateNumberReceived.js";
 import getCurrentTimestamp from "../lib/utils/getCurrentTimestamp.js";
 
@@ -113,12 +114,14 @@ async function handleAddReadingList(req, res) {
 
 async function handleDeleteReadingList(req, res) {
   const readingListData = {
-    readingListID: req.body["readingListID"],
+    reading_list_id: req.body["reading_list_id"],
     email: req.body["email"],
   };
 
   // Not a valid condition ! we did not receive a positive number
-  if (!(validateNumberReceived && Number(readingListData.readingListID) > 0)) {
+  if (
+    !(validateNumberReceived && Number(readingListData.reading_list_id) > 0)
+  ) {
     res.status(400).send({
       error: "Received invalid ID from client",
     });
@@ -142,7 +145,7 @@ async function handleDeleteReadingList(req, res) {
   // to check if email is tied to reading list that's about to be deleted
   const checkIsOwner =
     await database.relations.reading_lists.getReadingListByID(
-      readingListData.readingListID
+      readingListData.reading_list_id
     );
 
   // if getReadingListByID returns empty
@@ -150,7 +153,7 @@ async function handleDeleteReadingList(req, res) {
     res
       .status(400)
       .send(
-        "reading list does not exist on database! Can't delete reading list!"
+        "Reading list does not exist on database! Can't delete reading list!"
       );
     return;
   }
@@ -164,13 +167,13 @@ async function handleDeleteReadingList(req, res) {
   // Delete reading list from database
   const deleteReadingListResult =
     await database.relations.reading_lists.deleteReadingListByID(
-      readingListData.readingListID
+      readingListData.reading_list_id
     );
   // Successfully deleted
   if (deleteReadingListResult.rows.length >= 1) {
     res.status(200).send({
       data: deleteReadingListResult.rows,
-      message: `Successfully deleted reading list with ID: ${readingListData.readingListID}`,
+      message: `Successfully deleted reading list with ID: ${readingListData.reading_list_id}`,
     });
     return;
   }
@@ -182,10 +185,207 @@ async function handleDeleteReadingList(req, res) {
 }
 
 async function handleAddBookToReadingList(req, res) {
-  res.send("Hit post /api/readingList/book...");
+  const bookToReadingListData = {
+    reading_list_id: req.body["reading_list_id"],
+    book_uuid: req.body["book_uuid"],
+    email: req.body["email"],
+  };
+
+  if (!validateAddBookToReadingList(bookToReadingListData)) {
+    res.status(400).send("Data received from client is not valid!");
+    return;
+  }
+
+  // Check whether the email received exists in the database...
+  const database = res.locals.database;
+  const checkUserExists = await database.relations.users.checkUserExists(
+    bookToReadingListData.email
+  );
+
+  // if email already exists,
+  if (!(checkUserExists.rows.length >= 1)) {
+    res
+      .status(400)
+      .send(
+        "Email does not exist on database! Can't add book to reading list!"
+      );
+    return;
+  }
+
+  // check if book exist
+  const checkBookExists = await database.relations.books.checkBookExists(
+    bookToReadingListData.book_uuid
+  );
+  if (!(checkBookExists.rows.length >= 1)) {
+    res
+      .status(400)
+      .send("Book does not exist on database! Can't add book to reading list!");
+    return;
+  }
+
+  // to check if email is tied to reading list that's about to be added
+  const checkIsOwner =
+    await database.relations.reading_lists.getReadingListByID(
+      bookToReadingListData.reading_list_id
+    );
+
+  // if getReadingListByID returns empty means the reading list does not exist
+  if (!(checkIsOwner.rows.length >= 1)) {
+    res
+      .status(400)
+      .send(
+        "Reading list does not exist on database! Can't add book to reading list!"
+      );
+    return;
+  }
+
+  // check if book is already in reading list
+  const checkBookExistsInReadingList =
+    await database.relations.book_lists.checkBookInReadingListExists(
+      bookToReadingListData
+    );
+  if (checkBookExistsInReadingList.rows.length >= 1) {
+    res
+      .status(400)
+      .send(
+        "Book already exists in this reading list! Can't add book again to reading list!"
+      );
+    return;
+  }
+
+  // since there should only be one id that is to be added,
+  if (!(checkIsOwner.rows[0]["email"] === bookToReadingListData.email)) {
+    res
+      .status(400)
+      .send("You can't add a book to a reading list that you don't own.");
+    return;
+  }
+
+  // After you pass these 3 checks, you can add the reading list to the database
+  bookToReadingListData["timestamp_created_on"] = getCurrentTimestamp();
+
+  // Add book to reading list in database
+  const addBookToReadingListResult =
+    await database.relations.book_lists.addBookList(bookToReadingListData);
+  console.log(addBookToReadingListResult);
+  // If the database returned us 1 row, means it has succesfully added to the database...
+  if (addBookToReadingListResult.rows.length >= 1) {
+    res.status(200).send({
+      data: addBookToReadingListResult.rows,
+      message: "Successfully added book to reading list.",
+    });
+    return;
+  }
+
+  res.status(400).send({
+    error: "Something went wrong when adding a reading list.",
+  });
+  return;
 }
 
 async function handleDeleteBookFromReadingList(req, res) {
+  const bookFromReadingListData = {
+    reading_list_id: req.body["reading_list_id"],
+    book_uuid: req.body["book_uuid"],
+    email: req.body["email"],
+  };
+
+  // check if data received has key and value
+  if (!validateAddBookToReadingList(bookFromReadingListData)) {
+    res.status(400).send("Data received from client is not valid!");
+    return;
+  }
+
+  // Check whether the email received exists in the database...
+  const database = res.locals.database;
+  const checkUserExists = await database.relations.users.checkUserExists(
+    bookFromReadingListData.email
+  );
+
+  // if email already exists,
+  if (!(checkUserExists.rows.length >= 1)) {
+    res
+      .status(400)
+      .send(
+        "Email does not exist on database! Can't delete book from reading list!"
+      );
+    return;
+  }
+
+  // check if book exist
+  const checkBookExists = await database.relations.books.checkBookExists(
+    bookFromReadingListData.book_uuid
+  );
+  if (!(checkBookExists.rows.length >= 1)) {
+    res
+      .status(400)
+      .send(
+        "Book does not exist on database! Can't delete book from reading list!"
+      );
+    return;
+  }
+
+  // to check if email is tied to reading list that's about to be deleted
+  const checkIsOwner =
+    await database.relations.reading_lists.getReadingListByID(
+      bookFromReadingListData.reading_list_id
+    );
+
+  // if getReadingListByID returns empty means the reading list does not exist
+  if (!(checkIsOwner.rows.length >= 1)) {
+    res
+      .status(400)
+      .send(
+        "Reading list does not exist on database! Can't delete book from reading list!"
+      );
+    return;
+  }
+
+  // check if book is already in reading list
+  const checkBookExistsInReadingList =
+    await database.relations.book_lists.checkBookInReadingListExists(
+      bookFromReadingListData
+    );
+  if (!(checkBookExistsInReadingList.rows.length >= 1)) {
+    res
+      .status(400)
+      .send(
+        "Book does not exist in this reading list on database! Can't delete book that does not exist in reading list!"
+      );
+    return;
+  }
+
+  // since there should only be one id that is to be added,
+  if (!(checkIsOwner.rows[0]["email"] === bookFromReadingListData.email)) {
+    res
+      .status(400)
+      .send("You can't delete a book from a reading list that you don't own.");
+    return;
+  }
+
+  // After you pass these 3 checks, you can add the reading list to the database
+  bookFromReadingListData["timestamp_created_on"] = getCurrentTimestamp();
+
+  // Add book to reading list in database
+  const deleteBookFromReadingListResult =
+    await database.relations.book_lists.deleteBookFromReadingListByID(
+      bookFromReadingListData
+    );
+  console.log(deleteBookFromReadingListResult);
+  // If the database returned us 1 row, means it has succesfully added to the database...
+  if (deleteBookFromReadingListResult.rows.length >= 1) {
+    res.status(200).send({
+      data: deleteBookFromReadingListResult.rows,
+      message: "Successfully deleted book from reading list.",
+    });
+    return;
+  }
+
+  res.status(400).send({
+    error: "Something went wrong when adding a reading list.",
+  });
+  return;
+
   res.send("Hit delete /api/readingList/book...");
 }
 
