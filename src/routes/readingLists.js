@@ -12,11 +12,11 @@ export default function (database) {
   router.use((req, res, next) => injectDatabase(req, res, next, database));
 
   // Routes
-  router.get("/:readingListID", asyncErrorHandler(ReadingListsController.handleGetSpecificReadingList));
   router.get(
     "/all",
     asyncErrorHandler(ReadingListsController.handleAllReadingList)
   );
+  router.get("/:readingListID", asyncErrorHandler(ReadingListsController.handleGetSpecificReadingList));
   router.post(
     "/addReadingList",
     asyncErrorHandler(ReadingListsController.handleAddReadingList)
