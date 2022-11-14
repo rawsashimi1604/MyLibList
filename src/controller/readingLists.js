@@ -1,4 +1,5 @@
 import validateAddReadingList from "../lib/readingLists/validateAddReadingList.js";
+import validateDeleteReadingList from "../lib/readingLists/validateDeleteReadingList";
 import validateAddBookToReadingList from "../lib/readingLists/validateAddBookToReadingList.js";
 import validateNumberReceived from "../lib/utils/validateNumberReceived.js";
 import getCurrentTimestamp from "../lib/utils/getCurrentTimestamp.js";
@@ -118,6 +119,12 @@ async function handleDeleteReadingList(req, res) {
     email: req.body["email"],
   };
 
+  // if data sent is not an obj or does not have valid keys
+  if (!validateDeleteReadingList(readingListData)) {
+    res.status(400).send("Data received from client is not valid!");
+    return;
+  }
+
   // Not a valid condition ! we did not receive a positive number
   if (
     !(validateNumberReceived && Number(readingListData.reading_list_id) > 0)
@@ -148,7 +155,7 @@ async function handleDeleteReadingList(req, res) {
       readingListData.reading_list_id
     );
 
-  // if getReadingListByID returns empty
+  // Before checking if email is tied to readinglist that's to be deleted, if reading list id returns empty
   if (!(checkIsOwner.rows.length >= 1)) {
     res
       .status(400)
@@ -158,7 +165,7 @@ async function handleDeleteReadingList(req, res) {
     return;
   }
 
-  // since there should only be one id that is to be deleted,
+  // check if readinglist to be deleted belongs to owner
   if (!(checkIsOwner.rows[0]["email"] === readingListData.email)) {
     res.status(400).send("You can't delete a reading list that you don't own.");
     return;
