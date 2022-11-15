@@ -1,4 +1,5 @@
 import validateBook from "../lib/books/validateBook.js"
+import validateBookmark from "../lib/books/validateBookmark.js"
 import validateLikeBook from "../lib/books/validateLikeBook.js"
 import validateBookStatus from "../lib/books/validateBookStatus.js";
 import getCurrentTimestamp from "../lib/utils/getCurrentTimestamp.js";
@@ -35,7 +36,62 @@ async function handleDeleteBook(req, res) {
 }
 
 async function handleUpdateBookmark(req, res) {
-  res.send("Hit put /api/book/addBookmark...");
+  const updateBookmarkData = {
+    email: req.body["email"],
+    book_uuid: req.body["book_uuid"],
+    page: req.body["page"],
+  }
+
+  if(!validateBookmark(updateBookmarkData)){
+    res.status(400).send("Data received from client it not valid!");
+    return;
+  }
+
+  const database = res.locals.database;
+  const checkUserExists = await database.relations.users.checkUserExists(updateBookmarkData.email);
+
+  if(!(checkUserExists.rows.length >= 1)){
+    res.status(400).send("Email does not exist on database!");
+    return;
+  }
+
+  const checkBookExists = await database.relations.books.checkBookExists(updateBookmarkData.book_uuid);
+
+  if(!(checkBookExists.rows.length >= 1)){
+    res.status(400).send("Book does not exist on database!");
+  }
+
+  updateBookmarkData["timestamp_bookmarked"] = getCurrentTimestamp();
+
+  const checkIfBookmarkAdded = await database.relations.users_bookmarks.checkIfBookmarkAdded(updateBookmarkData.email, updateBookmarkData.book_uuid);
+
+  if(checkIfBookmarkAdded.rows.length >= 1){
+    const updateBookmarkResult = await database.relations.users_bookmarks.updateBookmark(updateBookmarkData.page, updateBookmarkData.timestamp_bookmarked, updateBookmarkData.email, updateBookmarkData.book_uuid);
+
+    if(updateBookmarkResult.rowCount >= 1){
+      res.status(200).send({
+        data: updateBookmarkData,
+        message: "Successfully updated bookmark page"
+      })
+    }
+  }
+
+  
+
+  const addBookmarkDataResult = await database.relations.users_bookmarks.addBookUserBookmarks(updateBookmarkData);
+
+  if(addBookmarkDataResult.rowCount >= 1){
+    res.status(200).send({
+      data: updateBookmarkData,
+      message: "Successfully bookmarked"
+    });
+    return;
+  }
+
+  res.status(400).send({
+    error: "Something went wrong when bookmarking the book"
+  });
+  return;
 }
 
 async function handleAddLike(req, res) {
@@ -90,7 +146,6 @@ async function handleAddLike(req, res) {
 }
 
 
-//Update but where is the add???
 async function handleUpdateStatus(req, res) {
   const updateStatusData = {
     email: req.body["email"],
@@ -105,6 +160,9 @@ async function handleUpdateStatus(req, res) {
 
   const database = res.locals.database;
   const checkUserExists = await database.relations.users.checkUserExists(updateStatusData.email);
+
+
+  updateStatusData["timestamp_updated"] = getCurrentTimestamp();
 
   if(!(checkUserExists.rows.length >= 1)){
     res.status(400).send("Email does not exist on database!");
@@ -121,7 +179,7 @@ async function handleUpdateStatus(req, res) {
   const checkIfBookStatusAdded = await database.relations.books_users_status.checkIfBookStatusAdded(updateStatusData.email, updateStatusData.book_uuid);
 
   if(checkIfBookStatusAdded.rows.length >= 1){
-    const updateStatusDataResult = await database.relations.books_users_status.updateBookUserStatus(updateStatusData.status);
+    const updateStatusDataResult = await database.relations.books_users_status.updateBookUserStatus(updateStatusData.status, updateStatusData.timestamp_updated, updateStatusData.email, updateStatusData.book_uuid);
 
     if(updateStatusDataResult.rowCount >= 1){
       res.status(200).send({
@@ -131,7 +189,6 @@ async function handleUpdateStatus(req, res) {
     }
   }
 
-  updateStatusData["timestamp_updated"] = getCurrentTimestamp();
 
   const addStatusDataResult = await database.relations.books_users_status.addBookUserStatus(updateStatusData);
 

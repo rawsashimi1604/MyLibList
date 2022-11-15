@@ -44,10 +44,10 @@ function addBookUserStatus(book) {
   }
 }
 
-function updateBookUserStatus(status){
+function updateBookUserStatus(status, timestamp, email, book){
   try{
-    const query = `UPDATE "books_users_status" SET status = $1`;
-    const params = [status];
+    const query = `UPDATE "books_users_status" SET status = $1, timestamp_updated = $2 WHERE email = $3 AND book_uuid = $4`;
+    const params = [status, timestamp, email, book];
     return db.query(query, params);
   } catch(err){
     console.log(err);
