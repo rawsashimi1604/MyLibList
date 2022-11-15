@@ -34,9 +34,7 @@ function getReadingListByID(readingListID) {
   try {
     const query = `SELECT * FROM "reading_lists" WHERE reading_list_id = $1`;
 
-    const params = [
-      readingListID
-    ];
+    const params = [readingListID];
 
     return db.query(query, params);
   } catch (err) {
