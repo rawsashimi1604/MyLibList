@@ -10,6 +10,17 @@ function getAllUsersBookmarks() {
   }
 }
 
+function getUsersBookmarksByID(book_uuid) {
+  try {
+    const query = `SELECT * FROM "users_bookmarks" WHERE book_uuid = $2`;
+    const params = [book_uuid];
+    return db.query(query, params);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
 function addBookUserBookmarks(book) {
   try {
     const query = `INSERT INTO "users_bookmarks"(
@@ -27,4 +38,8 @@ function addBookUserBookmarks(book) {
   }
 }
 
-export default { getAllUsersBookmarks, addBookUserBookmarks };
+export default {
+  getAllUsersBookmarks,
+  getUsersBookmarksByID,
+  addBookUserBookmarks,
+};

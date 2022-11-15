@@ -10,6 +10,28 @@ function getAllUsers() {
   }
 }
 
+function getUserByEmail(email){
+  try {
+    const query = `SELECT * FROM "users" WHERE email = $1`;
+    const params = [email];
+    return db.query(query, params);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
+function deleteUser(email) {
+  try {
+    const query = `DELETE FROM "users" WHERE email = $1`;
+    const params = [email];
+    return db.query(query, params);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
 function addUser(user) {
   try {
     const query = `INSERT INTO "users"(email, password, timestamp_registered, access_role, first_name, last_name) VALUES ($1, $2, $3, $4, $5, $6) RETURNING email`;
@@ -52,4 +74,23 @@ function getHashedUserPassword(user) {
   }
 }
 
-export default { getAllUsers, addUser, checkUserExists, getHashedUserPassword };
+function updateHashedUserPassword(user) {
+  try {
+    const query = `UPDATE "users" SET password = $1 WHERE email = $2 RETURNING *`;
+    const params = [user.password, user.email];
+    return db.query(query, params);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
+export default {
+  getAllUsers,
+  deleteUser,
+  addUser,
+  checkUserExists,
+  getHashedUserPassword,
+  updateHashedUserPassword,
+  getUserByEmail
+};
