@@ -1,5 +1,6 @@
 import validateBook from "../lib/books/validateBook.js"
 import validateLikeBook from "../lib/books/validateLikeBook.js"
+import validateBookStatus from "../lib/books/validateBookStatus.js";
 import getCurrentTimestamp from "../lib/utils/getCurrentTimestamp.js";
 
 async function handleIndex(req, res) {
@@ -88,8 +89,66 @@ async function handleAddLike(req, res) {
   
 }
 
+
+//Update but where is the add???
 async function handleUpdateStatus(req, res) {
-  res.send("Hit put /api/book/status...");
+  const updateStatusData = {
+    email: req.body["email"],
+    book_uuid: req.body["book_uuid"],
+    status: req.body["status"],
+  };
+
+  if(!validateBookStatus(updateStatusData)){
+    res.status(400).send("Data received from client is not valid!");
+    return;
+  }
+
+  const database = res.locals.database;
+  const checkUserExists = await database.relations.users.checkUserExists(updateStatusData.email);
+
+  if(!(checkUserExists.rows.length >= 1)){
+    res.status(400).send("Email does not exist on database!");
+    return;
+  }
+
+  const checkBookExists = await database.relations.books.checkBookExists(updateStatusData.book_uuid);
+
+  if(!(checkBookExists.rows.length >= 1)){
+    res.status(400).send("Book does not exist on database!");
+    return;
+  }
+
+  const checkIfBookStatusAdded = await database.relations.books_users_status.checkIfBookStatusAdded(updateStatusData.email, updateStatusData.book_uuid);
+
+  if(checkIfBookStatusAdded.rows.length >= 1){
+    const updateStatusDataResult = await database.relations.books_users_status.updateBookUserStatus(updateStatusData.status);
+
+    if(updateStatusDataResult.rowCount >= 1){
+      res.status(200).send({
+        data: updateStatusData,
+        message: "Successfully updated book status"
+      })
+    }
+  }
+
+  updateStatusData["timestamp_updated"] = getCurrentTimestamp();
+
+  const addStatusDataResult = await database.relations.books_users_status.addBookUserStatus(updateStatusData);
+
+  if (addStatusDataResult.rowCount >= 1){
+    res.status(200).send({
+      data: updateStatusData,
+      message: "Successfully added book status"
+    });
+    return;
+  }
+
+
+
+  res.status(400).send({
+    error: "Something went wrong when updating book status",
+  });
+  return;
 }
 
 async function handleGetTopBooks(req, res) {
