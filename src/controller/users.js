@@ -1,8 +1,11 @@
 import validateUserRegistration from "../lib/users/validateUserRegistration.js";
 import validateUpdatePassword from "../lib/users/validateUpdatePassword.js";
 import validateDeleteUser from "../lib/users/validateDeleteUser.js";
+import validateUser from "../lib/users/validateUser.js";
 import getCurrentTimestamp from "../lib/utils/getCurrentTimestamp.js";
+
 import bcrypt from "bcrypt";
+import { application } from "express";
 
 async function handleRegisterUser(req, res) {
   console.log(req.body);
@@ -54,6 +57,43 @@ async function handleRegisterUser(req, res) {
 }
 
 async function handleGetUserData(req, res) {
+  const email = req.query.email;
+
+  console.log(email);
+
+  if(!validateUser(email)){
+    res.status(400).send({
+      error: "Invalid email input"
+    });
+    return;
+  }
+
+  const database = res.locals.database;
+  const getUserDataByEmailResult = await database.relations.users.getUserByEmail(email);
+
+  
+  
+
+  if(getUserDataByEmailResult.rows.length >= 1){
+    res.status(200).send({
+      email : getUserDataByEmailResult.rows[0].email,
+      timestamp_registered: getUserDataByEmailResult.rows[0].timestamp_registered,
+      access_role: getUserDataByEmailResult.rows[0].access_role,
+      first_name: getUserDataByEmailResult.rows[0].first_name,
+      last_name: getUserDataByEmailResult.rows[0].last_name
+    });
+    return;
+  }
+
+
+  res.status(400).send({
+    error: "User is not registered"
+  });
+  return;
+  
+
+
+
   res.send("User route...");
 }
 
