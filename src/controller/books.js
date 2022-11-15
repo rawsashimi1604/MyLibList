@@ -118,7 +118,37 @@ async function handleUpdateStatus(req, res) {
     return;
   }
 
+  const checkIfBookStatusAdded = await database.relations.books_users_status.checkIfBookStatusAdded(updateStatusData.email, updateStatusData.book_uuid);
 
+  if(checkIfBookStatusAdded.rows.length >= 1){
+    const updateStatusDataResult = await database.relations.books_users_status.updateBookUserStatus(updateStatusData.status);
+
+    if(updateStatusDataResult.rowCount >= 1){
+      res.status(200).send({
+        data: updateStatusData,
+        message: "Successfully updated book status"
+      })
+    }
+  }
+
+  updateStatusData["timestamp_updated"] = getCurrentTimestamp();
+
+  const addStatusDataResult = await database.relations.books_users_status.addBookUserStatus(updateStatusData);
+
+  if (addStatusDataResult.rowCount >= 1){
+    res.status(200).send({
+      data: updateStatusData,
+      message: "Successfully added book status"
+    });
+    return;
+  }
+
+
+
+  res.status(400).send({
+    error: "Something went wrong when updating book status",
+  });
+  return;
 }
 
 async function handleGetTopBooks(req, res) {
