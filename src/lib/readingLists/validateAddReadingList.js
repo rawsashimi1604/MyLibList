@@ -1,7 +1,5 @@
-
 // Validate the data received from client is correct!
 export default function validateAddReadingList(readingListObject) {
-
   // Check if object was passed in...
   if (typeof readingListObject !== "object") return false;
 
@@ -14,5 +12,4 @@ export default function validateAddReadingList(readingListObject) {
 
   // Check was successful.
   return true;
-
 }

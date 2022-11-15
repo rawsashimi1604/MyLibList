@@ -10,6 +10,17 @@ function getAllUsers() {
   }
 }
 
+function getUserByEmail(email){
+  try {
+    const query = `SELECT * FROM "users" WHERE email = $1`;
+    const params = [email];
+    return db.query(query, params);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
 function deleteUser(email) {
   try {
     const query = `DELETE FROM "users" WHERE email = $1`;
@@ -81,4 +92,5 @@ export default {
   checkUserExists,
   getHashedUserPassword,
   updateHashedUserPassword,
+  getUserByEmail
 };
