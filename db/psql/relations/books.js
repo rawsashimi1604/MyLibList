@@ -70,16 +70,20 @@ function getBookByUUID(bookUUID) {
   // https://dba.stackexchange.com/questions/306694/convert-right-side-of-join-of-many-to-many-into-array-of-objects
   // https://stackoverflow.com/questions/26363742/how-to-remove-duplicates-which-are-generated-with-array-agg-postgres-function
   // https://stackoverflow.com/questions/35949485/how-to-aggregate-an-array-of-json-objects-with-postgres
+  // https://stackoverflow.com/questions/31108946/postgres-returns-null-instead-of-for-array-agg-of-join-table
 
+  // Use JSONB instead of JSON for binary DISTINCT comparison
+  // LEFT JOIN incase of NULL fields
+  // ARRAY_REMOVE for [ null ] => []
   try {
     const query = `
       SELECT b.book_uuid, b.access_rights, b.abstract, b.title, b.uri, b.date_created, b.description,
-      ARRAY_AGG(DISTINCT(lan.language)) AS languages,
-      ARRAY_AGG(DISTINCT(sub.subject_title)) AS subjects,
-      ARRAY_AGG(DISTINCT(lcsh.lcsh_tag)) AS lcsh,
-      ARRAY_AGG(DISTINCT(pub.publisher)) AS publishers,
-      ARRAY_AGG(DISTINCT(col.collection_title)) AS collections,
-      ARRAY_AGG(DISTINCT(alt.alternative_title)) AS alternative_titles,
+      ARRAY_REMOVE(ARRAY_AGG(DISTINCT(lan.language)), NULL) AS languages,
+      ARRAY_REMOVE(ARRAY_AGG(DISTINCT(sub.subject_title)), NULL) AS subjects,
+      ARRAY_REMOVE(ARRAY_AGG(DISTINCT(lcsh.lcsh_tag)), NULL) AS lcsh,
+      ARRAY_REMOVE(ARRAY_AGG(DISTINCT(pub.publisher)), NULL) AS publishers,
+      ARRAY_REMOVE(ARRAY_AGG(DISTINCT(col.collection_title)), NULL) AS collections,
+      ARRAY_REMOVE(ARRAY_AGG(DISTINCT(alt.alternative_title)), NULL) AS alternative_titles,
       JSON_STRIP_NULLS(
         JSON_AGG(
           DISTINCT JSONB_BUILD_OBJECT(
@@ -91,41 +95,41 @@ function getBookByUUID(bookUUID) {
 
       FROM "books" b
 
-      INNER JOIN "books_languages" bl
+      LEFT JOIN "books_languages" bl
         ON b.book_uuid = bl.book_uuid
-      INNER JOIN "languages" lan
+      LEFT JOIN "languages" lan
         ON bl.language_id = lan.language_id
 
-      INNER JOIN "books_subjects" bs
+      LEFT JOIN "books_subjects" bs
         ON b.book_uuid = bs.book_uuid
-      INNER JOIN "subjects" sub
+      LEFT JOIN "subjects" sub
         ON bs.subject_id = sub.subject_id
 
-      INNER JOIN "books_lcsh" blcsh
+      LEFT JOIN "books_lcsh" blcsh
         ON b.book_uuid = blcsh.book_uuid
-      INNER JOIN "lcsh"
+      LEFT JOIN "lcsh"
         ON blcsh.lcsh_id = lcsh.lcsh_id
 
-      INNER JOIN "books_published_by" bpub
+      LEFT JOIN "books_published_by" bpub
         ON b.book_uuid = bpub.book_uuid
-      INNER JOIN "publishers" pub
+      LEFT JOIN "publishers" pub
         ON bpub.publisher_id = pub.publisher_id
 
-      INNER JOIN "books_in_collections" bcol
+      LEFT JOIN "books_in_collections" bcol
         ON b.book_uuid = bcol.book_uuid
-      INNER JOIN "collections" col
+      LEFT JOIN "collections" col
         ON bcol.collection_id = col.collection_id
 
-      INNER JOIN "alternative_titles" alt
+      LEFT JOIN "alternative_titles" alt
         ON b.book_uuid = alt.book_uuid
 
-      INNER JOIN "books_contributors" bcon
+      LEFT JOIN "books_contributors" bcon
         ON b.book_uuid = bcon.book_uuid
-      INNER JOIN "contributors" con
+      LEFT JOIN "contributors" con
         ON bcon.contributor_id = con.contributor_id
 
       WHERE b.book_uuid = $1
-      GROUP BY b.book_uuid, b.access_rights, b.abstract, b.title, b.uri, b.date_created, b.description
+      GROUP BY b.book_uuid
     `;
     const params = [bookUUID];
     return db.query(query, params);

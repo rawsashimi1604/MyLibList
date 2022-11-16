@@ -9,9 +9,15 @@ async function handleIndex(req, res) {
   const database = res.locals.database;
   const queryUUID = req.query.bookUUID;
 
+  console.log(queryUUID);
   const bookData = await database.relations.books.getBookByUUID(queryUUID);
-  console.log(bookData.rows[0]);
-  return res.status(200).send("success");
+
+  // Strip empty objects in contributor key
+  bookData.rows[0].contributors = bookData.rows[0].contributors.filter(
+    (contributor) => Object.keys(contributor).length !== 0
+  );
+
+  return res.status(200).send(bookData.rows[0]);
 }
 
 async function handleDeleteBook(req, res) {
