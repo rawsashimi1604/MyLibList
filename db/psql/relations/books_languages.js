@@ -27,20 +27,4 @@ function addBooksLanguages(booksLanguages) {
   }
 }
 
-function getBooksLanguageByUUID(uuid) {
-  try {
-    const query = `
-      SELECT "languages".language FROM "books_languages"  
-      INNER JOIN "languages" ON
-      "books_languages".language_id = "languages".language_id
-      WHERE book_uuid=$1   
-    `;
-    const params = [uuid];
-    return db.query(query, params);
-  } catch (err) {
-    console.log(err);
-    throw err;
-  }
-}
-
 export default { getBooksLanguages, addBooksLanguages, getBooksLanguageByUUID };
