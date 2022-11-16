@@ -1,5 +1,62 @@
 import db from "../config.js";
 
+// book query to join all connecting tables
+const bookSelectQuery = `SELECT b.book_uuid, b.access_rights, b.abstract, b.title, b.uri, b.date_created, b.description,
+ARRAY_REMOVE(ARRAY_AGG(DISTINCT(lan.language)), NULL) AS languages,
+ARRAY_REMOVE(ARRAY_AGG(DISTINCT(sub.subject_title)), NULL) AS subjects,
+ARRAY_REMOVE(ARRAY_AGG(DISTINCT(lcsh.lcsh_tag)), NULL) AS lcsh,
+ARRAY_REMOVE(ARRAY_AGG(DISTINCT(pub.publisher)), NULL) AS publishers,
+ARRAY_REMOVE(ARRAY_AGG(DISTINCT(col.collection_title)), NULL) AS collections,
+ARRAY_REMOVE(ARRAY_AGG(DISTINCT(alt.alternative_title)), NULL) AS alternative_titles,
+JSON_STRIP_NULLS(
+  JSON_AGG(
+    DISTINCT JSONB_BUILD_OBJECT(
+      'contributor', con.contributor,
+      'contributor_type', bcon.contributor_type
+    )
+  )
+) AS contributors`;
+
+const joinQuery = `
+      LEFT JOIN "books_languages" bl
+        ON b.book_uuid = bl.book_uuid
+      LEFT JOIN "languages" lan
+        ON bl.language_id = lan.language_id
+
+      LEFT JOIN "books_subjects" bs
+        ON b.book_uuid = bs.book_uuid
+      LEFT JOIN "subjects" sub
+        ON bs.subject_id = sub.subject_id
+
+      LEFT JOIN "books_lcsh" blcsh
+        ON b.book_uuid = blcsh.book_uuid
+      LEFT JOIN "lcsh"
+        ON blcsh.lcsh_id = lcsh.lcsh_id
+
+      LEFT JOIN "books_published_by" bpub
+        ON b.book_uuid = bpub.book_uuid
+      LEFT JOIN "publishers" pub
+        ON bpub.publisher_id = pub.publisher_id
+
+      LEFT JOIN "books_in_collections" bcol
+        ON b.book_uuid = bcol.book_uuid
+      LEFT JOIN "collections" col
+        ON bcol.collection_id = col.collection_id
+
+      LEFT JOIN "alternative_titles" alt
+        ON b.book_uuid = alt.book_uuid
+
+      LEFT JOIN "books_contributors" bcon
+        ON b.book_uuid = bcon.book_uuid
+      LEFT JOIN "contributors" con
+        ON bcon.contributor_id = con.contributor_id`;
+
+const bookQuery = `
+      ${bookSelectQuery}
+      FROM "books" b
+      ${joinQuery}
+`;
+
 function getAllBooks() {
   try {
     const query = `SELECT * FROM "books"`;
@@ -78,57 +135,7 @@ function getBookByUUID(bookUUID) {
 
   try {
     const query = `
-      SELECT b.book_uuid, b.access_rights, b.abstract, b.title, b.uri, b.date_created, b.description,
-      ARRAY_REMOVE(ARRAY_AGG(DISTINCT(lan.language)), NULL) AS languages,
-      ARRAY_REMOVE(ARRAY_AGG(DISTINCT(sub.subject_title)), NULL) AS subjects,
-      ARRAY_REMOVE(ARRAY_AGG(DISTINCT(lcsh.lcsh_tag)), NULL) AS lcsh,
-      ARRAY_REMOVE(ARRAY_AGG(DISTINCT(pub.publisher)), NULL) AS publishers,
-      ARRAY_REMOVE(ARRAY_AGG(DISTINCT(col.collection_title)), NULL) AS collections,
-      ARRAY_REMOVE(ARRAY_AGG(DISTINCT(alt.alternative_title)), NULL) AS alternative_titles,
-      JSON_STRIP_NULLS(
-        JSON_AGG(
-          DISTINCT JSONB_BUILD_OBJECT(
-            'contributor', con.contributor,
-            'contributor_type', bcon.contributor_type
-          )
-        )
-      ) AS contributors
-
-      FROM "books" b
-
-      LEFT JOIN "books_languages" bl
-        ON b.book_uuid = bl.book_uuid
-      LEFT JOIN "languages" lan
-        ON bl.language_id = lan.language_id
-
-      LEFT JOIN "books_subjects" bs
-        ON b.book_uuid = bs.book_uuid
-      LEFT JOIN "subjects" sub
-        ON bs.subject_id = sub.subject_id
-
-      LEFT JOIN "books_lcsh" blcsh
-        ON b.book_uuid = blcsh.book_uuid
-      LEFT JOIN "lcsh"
-        ON blcsh.lcsh_id = lcsh.lcsh_id
-
-      LEFT JOIN "books_published_by" bpub
-        ON b.book_uuid = bpub.book_uuid
-      LEFT JOIN "publishers" pub
-        ON bpub.publisher_id = pub.publisher_id
-
-      LEFT JOIN "books_in_collections" bcol
-        ON b.book_uuid = bcol.book_uuid
-      LEFT JOIN "collections" col
-        ON bcol.collection_id = col.collection_id
-
-      LEFT JOIN "alternative_titles" alt
-        ON b.book_uuid = alt.book_uuid
-
-      LEFT JOIN "books_contributors" bcon
-        ON b.book_uuid = bcon.book_uuid
-      LEFT JOIN "contributors" con
-        ON bcon.contributor_id = con.contributor_id
-
+      ${bookQuery}
       WHERE b.book_uuid = $1
       GROUP BY b.book_uuid
     `;
@@ -217,64 +224,32 @@ function getBookBySearchParams(queryObj) {
     where = where.join(" AND ");
     if (where) where = `WHERE ${where}`;
 
-    console.log(`where: ${where}`);
-
     const query = `
-      SELECT b.book_uuid, b.access_rights, b.abstract, b.title, b.uri, b.date_created, b.description,
-      ARRAY_REMOVE(ARRAY_AGG(DISTINCT(lan.language)), NULL) AS languages,
-      ARRAY_REMOVE(ARRAY_AGG(DISTINCT(sub.subject_title)), NULL) AS subjects,
-      ARRAY_REMOVE(ARRAY_AGG(DISTINCT(lcsh.lcsh_tag)), NULL) AS lcsh,
-      ARRAY_REMOVE(ARRAY_AGG(DISTINCT(pub.publisher)), NULL) AS publishers,
-      ARRAY_REMOVE(ARRAY_AGG(DISTINCT(col.collection_title)), NULL) AS collections,
-      ARRAY_REMOVE(ARRAY_AGG(DISTINCT(alt.alternative_title)), NULL) AS alternative_titles,
-      JSON_STRIP_NULLS(
-        JSON_AGG(
-          DISTINCT JSONB_BUILD_OBJECT(
-            'contributor', con.contributor,
-            'contributor_type', bcon.contributor_type
-          )
-        )
-      ) AS contributors
-
-      FROM "books" b
-
-      LEFT JOIN "books_languages" bl
-        ON b.book_uuid = bl.book_uuid
-      LEFT JOIN "languages" lan
-        ON bl.language_id = lan.language_id
-
-      LEFT JOIN "books_subjects" bs
-        ON b.book_uuid = bs.book_uuid
-      LEFT JOIN "subjects" sub
-        ON bs.subject_id = sub.subject_id
-
-      LEFT JOIN "books_lcsh" blcsh
-        ON b.book_uuid = blcsh.book_uuid
-      LEFT JOIN "lcsh"
-        ON blcsh.lcsh_id = lcsh.lcsh_id
-
-      LEFT JOIN "books_published_by" bpub
-        ON b.book_uuid = bpub.book_uuid
-      LEFT JOIN "publishers" pub
-        ON bpub.publisher_id = pub.publisher_id
-
-      LEFT JOIN "books_in_collections" bcol
-        ON b.book_uuid = bcol.book_uuid
-      LEFT JOIN "collections" col
-        ON bcol.collection_id = col.collection_id
-
-      LEFT JOIN "alternative_titles" alt
-        ON b.book_uuid = alt.book_uuid
-
-      LEFT JOIN "books_contributors" bcon
-        ON b.book_uuid = bcon.book_uuid
-      LEFT JOIN "contributors" con
-        ON bcon.contributor_id = con.contributor_id
-
+      ${bookQuery}
       ${where}
       GROUP BY b.book_uuid
     `;
 
+    return db.query(query, params);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
+function getTopBooksByLikes(numberOfBooks) {
+  try {
+    const query = `
+      ${bookSelectQuery}, COUNT(blikes.book_uuid) AS likes
+      FROM "books" b
+      ${joinQuery}
+      LEFT OUTER JOIN "books_users_likes" blikes
+        ON blikes.book_uuid = b.book_uuid
+      GROUP BY b.book_uuid
+      ORDER BY COUNT(blikes.book_uuid) DESC, b.title
+      LIMIT $1
+    `;
+    const params = [numberOfBooks];
     return db.query(query, params);
   } catch (err) {
     console.log(err);
@@ -289,4 +264,5 @@ export default {
   checkBookExists,
   getBookByUUID,
   getBookBySearchParams,
+  getTopBooksByLikes,
 };

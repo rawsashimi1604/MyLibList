@@ -289,8 +289,12 @@ async function handleUpdateStatus(req, res) {
 
 async function handleGetTopBooks(req, res) {
   // Get top 50 books by likes
+  const database = res.locals.database;
+  const topBooksResult = await database.relations.books.getTopBooksByLikes(20);
 
-  res.send("Hit get /api/book/topBooks...");
+  res.send({
+    data: [...topBooksResult.rows],
+  });
 }
 
 export default {
