@@ -142,16 +142,6 @@ function getBookByUUID(bookUUID) {
 
 function getBookBySearchParams(queryObj) {
   try {
-    //     - GET /api/book                        (SEARCH BOOKS BY TERM)
-    // ?bookUUID=""
-    // &bookName=""
-    // &language=""
-    // &collection=""
-    // &subjects=""
-    // &contributors=""
-    // &lcsh=""
-    // &publisher=""
-
     // Generate WHITELIST
     // for WHERE conditions for search condition...
     const whitelist = [
