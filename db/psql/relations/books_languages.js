@@ -27,4 +27,4 @@ function addBooksLanguages(booksLanguages) {
   }
 }
 
-export default { getBooksLanguages, addBooksLanguages, getBooksLanguageByUUID };
+export default { getBooksLanguages, addBooksLanguages };

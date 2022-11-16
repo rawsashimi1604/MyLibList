@@ -3,15 +3,14 @@ import validateBookmark from "../lib/books/validateBookmark.js";
 import validateLikeBook from "../lib/books/validateLikeBook.js";
 import validateBookStatus from "../lib/books/validateBookStatus.js";
 import getCurrentTimestamp from "../lib/utils/getCurrentTimestamp.js";
-import buildBook from "../lib/books/buildBook.js";
 
 async function handleIndex(req, res) {
   // Check which query param was passed in...
   const database = res.locals.database;
   const queryUUID = req.query.bookUUID;
 
-  const bookData = await buildBook(database, queryUUID);
-  console.log(bookData);
+  const bookData = await database.relations.books.getBookByUUID(queryUUID);
+  console.log(bookData.rows[0]);
   return res.status(200).send("success");
 }
 
