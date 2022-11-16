@@ -212,23 +212,5 @@ CREATE TABLE IF NOT EXISTS "books_contributors"(
     PRIMARY KEY (contributor_id, book_uuid, contributor_type)
 );
 
--- Function for json objects
--- https://stackoverflow.com/questions/55900778/strip-empty-objects-on-generated-json-jsonb-on-postgresql
-create or replace function json_object_nullif(
-    _data json
-)
-returns json
-as $$
-    select nullif(json_strip_nulls(_data)::text, '{}')::json
-$$ language sql;
-
-create or replace function json_array_nullif(
-    _data json
-)
-returns json
-as $$
-    select nullif(_data::text, '[null]')::json
-$$ language sql;
-
 
 
