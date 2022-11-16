@@ -1,38 +1,49 @@
-import validateBook from "../lib/books/validateBook.js"
-import validateBookmark from "../lib/books/validateBookmark.js"
-import validateLikeBook from "../lib/books/validateLikeBook.js"
+import validateBook from "../lib/books/validateBook.js";
+import validateBookmark from "../lib/books/validateBookmark.js";
+import validateLikeBook from "../lib/books/validateLikeBook.js";
 import validateBookStatus from "../lib/books/validateBookStatus.js";
 import getCurrentTimestamp from "../lib/utils/getCurrentTimestamp.js";
+import buildBook from "../lib/books/buildBook.js";
 
 async function handleIndex(req, res) {
-  res.send("Book route...");
+  // Check which query param was passed in...
+  const database = res.locals.database;
+  const queryUUID = req.query.bookUUID;
+
+  const bookData = await buildBook(database, queryUUID);
+  console.log(bookData);
+  return res.status(200).send("success");
 }
 
 async function handleDeleteBook(req, res) {
-    const bookUUID = req.body.book_uuid;
+  const bookUUID = req.body.book_uuid;
 
-    if(!validateBook(bookUUID)){
-        res.status(400).send("Data received from client is not valid!");
-        return;
-    }
+  if (!validateBook(bookUUID)) {
+    res.status(400).send("Data received from client is not valid!");
+    return;
+  }
 
-    const database = res.locals.database;
-    const checkBookExists = await database.relations.books.checkBookExists(bookUUID);
+  const database = res.locals.database;
+  const checkBookExists = await database.relations.books.checkBookExists(
+    bookUUID
+  );
 
-    if(!(checkBookExists.rows.length >= 1)){
-      res.status(400).send("Book does not exist in the database");
-      return;
-    }
+  if (!(checkBookExists.rows.length >= 1)) {
+    res.status(400).send("Book does not exist in the database");
+    return;
+  }
 
-    const deleteBookResult = await database.relations.books.deleteBookByID(bookUUID);
-    if(deleteBookResult.rows.length >= 1){
-      res.status(200).send({
-        book_uuid: deleteBookResult.rows[0].book_uuid,
-        book_title: deleteBookResult.rows[0].title,
-        message: `Successfully deleted book UUID: ${bookUUID}`
-      })
-      return;
-    }
+  const deleteBookResult = await database.relations.books.deleteBookByID(
+    bookUUID
+  );
+  if (deleteBookResult.rows.length >= 1) {
+    res.status(200).send({
+      book_uuid: deleteBookResult.rows[0].book_uuid,
+      book_title: deleteBookResult.rows[0].title,
+      message: `Successfully deleted book UUID: ${bookUUID}`,
+    });
+    return;
+  }
 }
 
 async function handleUpdateBookmark(req, res) {
@@ -40,56 +51,71 @@ async function handleUpdateBookmark(req, res) {
     email: req.body["email"],
     book_uuid: req.body["book_uuid"],
     page: req.body["page"],
-  }
+  };
 
-  if(!validateBookmark(updateBookmarkData)){
+  if (!validateBookmark(updateBookmarkData)) {
     res.status(400).send("Data received from client it not valid!");
     return;
   }
 
   const database = res.locals.database;
-  const checkUserExists = await database.relations.users.checkUserExists(updateBookmarkData.email);
+  const checkUserExists = await database.relations.users.checkUserExists(
+    updateBookmarkData.email
+  );
 
-  if(!(checkUserExists.rows.length >= 1)){
+  if (!(checkUserExists.rows.length >= 1)) {
     res.status(400).send("Email does not exist on database!");
     return;
   }
 
-  const checkBookExists = await database.relations.books.checkBookExists(updateBookmarkData.book_uuid);
+  const checkBookExists = await database.relations.books.checkBookExists(
+    updateBookmarkData.book_uuid
+  );
 
-  if(!(checkBookExists.rows.length >= 1)){
+  if (!(checkBookExists.rows.length >= 1)) {
     res.status(400).send("Book does not exist on database!");
   }
 
   updateBookmarkData["timestamp_bookmarked"] = getCurrentTimestamp();
 
-  const checkIfBookmarkAdded = await database.relations.users_bookmarks.checkIfBookmarkAdded(updateBookmarkData.email, updateBookmarkData.book_uuid);
+  const checkIfBookmarkAdded =
+    await database.relations.users_bookmarks.checkIfBookmarkAdded(
+      updateBookmarkData.email,
+      updateBookmarkData.book_uuid
+    );
 
-  if(checkIfBookmarkAdded.rows.length >= 1){
-    const updateBookmarkResult = await database.relations.users_bookmarks.updateBookmark(updateBookmarkData.page, updateBookmarkData.timestamp_bookmarked, updateBookmarkData.email, updateBookmarkData.book_uuid);
+  if (checkIfBookmarkAdded.rows.length >= 1) {
+    const updateBookmarkResult =
+      await database.relations.users_bookmarks.updateBookmark(
+        updateBookmarkData.page,
+        updateBookmarkData.timestamp_bookmarked,
+        updateBookmarkData.email,
+        updateBookmarkData.book_uuid
+      );
 
-    if(updateBookmarkResult.rowCount >= 1){
+    if (updateBookmarkResult.rowCount >= 1) {
       res.status(200).send({
         data: updateBookmarkData,
-        message: "Successfully updated bookmark page"
-      })
+        message: "Successfully updated bookmark page",
+      });
     }
   }
 
-  
+  const addBookmarkDataResult =
+    await database.relations.users_bookmarks.addBookUserBookmarks(
+      updateBookmarkData
+    );
 
-  const addBookmarkDataResult = await database.relations.users_bookmarks.addBookUserBookmarks(updateBookmarkData);
-
-  if(addBookmarkDataResult.rowCount >= 1){
+  if (addBookmarkDataResult.rowCount >= 1) {
     res.status(200).send({
       data: updateBookmarkData,
-      message: "Successfully bookmarked"
+      message: "Successfully bookmarked",
     });
     return;
   }
 
   res.status(400).send({
-    error: "Something went wrong when bookmarking the book"
+    error: "Something went wrong when bookmarking the book",
   });
   return;
 }
@@ -97,54 +123,61 @@ async function handleUpdateBookmark(req, res) {
 async function handleAddLike(req, res) {
   const likeBookData = {
     email: req.body["email"],
-    book_uuid: req.body["book_uuid"]
-  }
+    book_uuid: req.body["book_uuid"],
+  };
 
-  if(!validateLikeBook(likeBookData)){
+  if (!validateLikeBook(likeBookData)) {
     res.status(400).send("Data received from client is not valid!");
   }
 
   const database = res.locals.database;
-  const checkUserExists = await database.relations.users.checkUserExists(likeBookData.email);
+  const checkUserExists = await database.relations.users.checkUserExists(
+    likeBookData.email
+  );
 
-  if(!(checkUserExists.rows.length >= 1)){
+  if (!(checkUserExists.rows.length >= 1)) {
     res.status(400).send("Email does not exist on database!");
     return;
   }
 
-  const checkBookExists = await database.relations.books.checkBookExists(likeBookData.book_uuid);
+  const checkBookExists = await database.relations.books.checkBookExists(
+    likeBookData.book_uuid
+  );
 
-  if(!(checkBookExists.rows.length >= 1)){
+  if (!(checkBookExists.rows.length >= 1)) {
     res.status(400).send("Book does not exist on database!");
     return;
   }
 
-  const checkIfBookIsLiked = await database.relations.books_users_likes.checkIfBookIsLiked(likeBookData.email,likeBookData.book_uuid);
+  const checkIfBookIsLiked =
+    await database.relations.books_users_likes.checkIfBookIsLiked(
+      likeBookData.email,
+      likeBookData.book_uuid
+    );
 
-  if(checkIfBookIsLiked.rows.length >= 1){
+  if (checkIfBookIsLiked.rows.length >= 1) {
     res.status(400).send("User has already liked the book");
     return;
   }
   likeBookData["timestamp_liked"] = getCurrentTimestamp();
 
-  const addBookLikeResult = await database.relations.books_users_likes.addBookUsersLikes(likeBookData);
+  const addBookLikeResult =
+    await database.relations.books_users_likes.addBookUsersLikes(likeBookData);
 
-  if(addBookLikeResult.rowCount >= 1){
+  if (addBookLikeResult.rowCount >= 1) {
     res.status(200).send({
       email: `${likeBookData.email}`,
       book_uuid: `${likeBookData.book_uuid}`,
-      message: "Successfully liked book."
-    })
+      message: "Successfully liked book.",
+    });
     return;
   }
 
   res.status(400).send({
-    error: "Something went wrong when liking a book"
+    error: "Something went wrong when liking a book",
   });
   return;
-  
 }
-
 
 async function handleUpdateStatus(req, res) {
   const updateStatusData = {
@@ -153,54 +186,67 @@ async function handleUpdateStatus(req, res) {
     status: req.body["status"],
   };
 
-  if(!validateBookStatus(updateStatusData)){
+  if (!validateBookStatus(updateStatusData)) {
     res.status(400).send("Data received from client is not valid!");
     return;
   }
 
   const database = res.locals.database;
-  const checkUserExists = await database.relations.users.checkUserExists(updateStatusData.email);
-
+  const checkUserExists = await database.relations.users.checkUserExists(
+    updateStatusData.email
+  );
 
   updateStatusData["timestamp_updated"] = getCurrentTimestamp();
 
-  if(!(checkUserExists.rows.length >= 1)){
+  if (!(checkUserExists.rows.length >= 1)) {
     res.status(400).send("Email does not exist on database!");
     return;
   }
 
-  const checkBookExists = await database.relations.books.checkBookExists(updateStatusData.book_uuid);
+  const checkBookExists = await database.relations.books.checkBookExists(
+    updateStatusData.book_uuid
+  );
 
-  if(!(checkBookExists.rows.length >= 1)){
+  if (!(checkBookExists.rows.length >= 1)) {
     res.status(400).send("Book does not exist on database!");
     return;
   }
 
-  const checkIfBookStatusAdded = await database.relations.books_users_status.checkIfBookStatusAdded(updateStatusData.email, updateStatusData.book_uuid);
+  const checkIfBookStatusAdded =
+    await database.relations.books_users_status.checkIfBookStatusAdded(
+      updateStatusData.email,
+      updateStatusData.book_uuid
+    );
 
-  if(checkIfBookStatusAdded.rows.length >= 1){
-    const updateStatusDataResult = await database.relations.books_users_status.updateBookUserStatus(updateStatusData.status, updateStatusData.timestamp_updated, updateStatusData.email, updateStatusData.book_uuid);
+  if (checkIfBookStatusAdded.rows.length >= 1) {
+    const updateStatusDataResult =
+      await database.relations.books_users_status.updateBookUserStatus(
+        updateStatusData.status,
+        updateStatusData.timestamp_updated,
+        updateStatusData.email,
+        updateStatusData.book_uuid
+      );
 
-    if(updateStatusDataResult.rowCount >= 1){
+    if (updateStatusDataResult.rowCount >= 1) {
       res.status(200).send({
         data: updateStatusData,
-        message: "Successfully updated book status"
-      })
+        message: "Successfully updated book status",
+      });
     }
   }
 
+  const addStatusDataResult =
+    await database.relations.books_users_status.addBookUserStatus(
+      updateStatusData
+    );
 
-  const addStatusDataResult = await database.relations.books_users_status.addBookUserStatus(updateStatusData);
-
-  if (addStatusDataResult.rowCount >= 1){
+  if (addStatusDataResult.rowCount >= 1) {
     res.status(200).send({
       data: updateStatusData,
-      message: "Successfully added book status"
+      message: "Successfully added book status",
     });
     return;
   }
-
-
 
   res.status(400).send({
     error: "Something went wrong when updating book status",
@@ -209,6 +255,8 @@ async function handleUpdateStatus(req, res) {
 }
 
 async function handleGetTopBooks(req, res) {
+  // Get top 50 books by likes
+
   res.send("Hit get /api/book/topBooks...");
 }
 
