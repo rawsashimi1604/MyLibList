@@ -75,6 +75,7 @@ function getBookByUUID(bookUUID) {
   // Use JSONB instead of JSON for binary DISTINCT comparison
   // LEFT JOIN incase of NULL fields
   // ARRAY_REMOVE for [ null ] => []
+
   try {
     const query = `
       SELECT b.book_uuid, b.access_rights, b.abstract, b.title, b.uri, b.date_created, b.description,
@@ -139,10 +140,163 @@ function getBookByUUID(bookUUID) {
   }
 }
 
+function getBookBySearchParams(queryObj) {
+  try {
+    //     - GET /api/book                        (SEARCH BOOKS BY TERM)
+    // ?bookUUID=""
+    // &bookName=""
+    // &language=""
+    // &collection=""
+    // &subjects=""
+    // &contributors=""
+    // &lcsh=""
+    // &publisher=""
+
+    // Generate WHITELIST
+    // for WHERE conditions for search condition...
+    const whitelist = [
+      "book_uuid",
+      "title",
+      "language",
+      "collection",
+      "subject",
+      "contributor",
+      "lcsh",
+      "publisher",
+    ];
+
+    // Array to contain WHERE conditions for SQL querying...
+    let where = [];
+    const params = [];
+    let count = 1;
+
+    Object.keys(queryObj).forEach((key) => {
+      console.log(key);
+
+      // If key is not whitelisted, do not use
+      if (!whitelist.includes(key)) return;
+
+      // If key is an empty string, do not use
+      if ("" === queryObj[key]) return;
+
+      // Add to WHERE based on foreign key/key
+      // book_uuid check
+      if (key === "book_uuid") {
+        where.push(`b.${key} = $${count}`);
+        params.push(queryObj[key]);
+      }
+      // title check
+      else if (key === "title") {
+        where.push(`LOWER(b.${key}) LIKE LOWER($${count})`);
+        params.push(`%${queryObj[key]}%`);
+      }
+      // language check
+      else if (key === "language") {
+        where.push(`lan.${key} = $${count}`);
+        params.push(queryObj[key]);
+      }
+      // collection check
+      else if (key === "collection") {
+        where.push(`col.${key} = $${count}`);
+        params.push(queryObj[key]);
+      }
+      // subject check
+      else if (key === "subject") {
+        where.push(`sub.${key} = $${count}`);
+        params.push(queryObj[key]);
+      }
+      // contributor check
+      else if (key === "contributor") {
+        where.push(`con.${key} = $${count}`);
+        params.push(queryObj[key]);
+      }
+      // lcsh check
+      else if (key === "lcsh") {
+        where.push(`lcsh.${key} = $${count}`);
+        params.push(queryObj[key]);
+      }
+      // publisher check
+      else if (key === "publisher") {
+        where.push(`LOWER(pub.${key}) LIKE LOWER($${count})`);
+        params.push(queryObj[key]);
+      }
+
+      count++;
+    });
+
+    where = where.join(" AND ");
+    if (where) where = `WHERE ${where}`;
+
+    console.log(`where: ${where}`);
+
+    const query = `
+      SELECT b.book_uuid, b.access_rights, b.abstract, b.title, b.uri, b.date_created, b.description,
+      ARRAY_REMOVE(ARRAY_AGG(DISTINCT(lan.language)), NULL) AS languages,
+      ARRAY_REMOVE(ARRAY_AGG(DISTINCT(sub.subject_title)), NULL) AS subjects,
+      ARRAY_REMOVE(ARRAY_AGG(DISTINCT(lcsh.lcsh_tag)), NULL) AS lcsh,
+      ARRAY_REMOVE(ARRAY_AGG(DISTINCT(pub.publisher)), NULL) AS publishers,
+      ARRAY_REMOVE(ARRAY_AGG(DISTINCT(col.collection_title)), NULL) AS collections,
+      ARRAY_REMOVE(ARRAY_AGG(DISTINCT(alt.alternative_title)), NULL) AS alternative_titles,
+      JSON_STRIP_NULLS(
+        JSON_AGG(
+          DISTINCT JSONB_BUILD_OBJECT(
+            'contributor', con.contributor,
+            'contributor_type', bcon.contributor_type
+          )
+        )
+      ) AS contributors
+
+      FROM "books" b
+
+      LEFT JOIN "books_languages" bl
+        ON b.book_uuid = bl.book_uuid
+      LEFT JOIN "languages" lan
+        ON bl.language_id = lan.language_id
+
+      LEFT JOIN "books_subjects" bs
+        ON b.book_uuid = bs.book_uuid
+      LEFT JOIN "subjects" sub
+        ON bs.subject_id = sub.subject_id
+
+      LEFT JOIN "books_lcsh" blcsh
+        ON b.book_uuid = blcsh.book_uuid
+      LEFT JOIN "lcsh"
+        ON blcsh.lcsh_id = lcsh.lcsh_id
+
+      LEFT JOIN "books_published_by" bpub
+        ON b.book_uuid = bpub.book_uuid
+      LEFT JOIN "publishers" pub
+        ON bpub.publisher_id = pub.publisher_id
+
+      LEFT JOIN "books_in_collections" bcol
+        ON b.book_uuid = bcol.book_uuid
+      LEFT JOIN "collections" col
+        ON bcol.collection_id = col.collection_id
+
+      LEFT JOIN "alternative_titles" alt
+        ON b.book_uuid = alt.book_uuid
+
+      LEFT JOIN "books_contributors" bcon
+        ON b.book_uuid = bcon.book_uuid
+      LEFT JOIN "contributors" con
+        ON bcon.contributor_id = con.contributor_id
+
+      ${where}
+      GROUP BY b.book_uuid
+    `;
+
+    return db.query(query, params);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
 export default {
   getAllBooks,
   addBook,
   deleteBookByID,
   checkBookExists,
   getBookByUUID,
+  getBookBySearchParams,
 };

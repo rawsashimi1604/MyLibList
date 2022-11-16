@@ -7,17 +7,45 @@ import getCurrentTimestamp from "../lib/utils/getCurrentTimestamp.js";
 async function handleIndex(req, res) {
   // Check which query param was passed in...
   const database = res.locals.database;
-  const queryUUID = req.query.bookUUID;
 
-  console.log(queryUUID);
-  const bookData = await database.relations.books.getBookByUUID(queryUUID);
+  // Check if title contains at least 2 characters
+  if (req.query.title && !(req.query.title.length >= 2)) {
+    res.status(400).send({
+      error: "Title must exceed at least 2 characters",
+    });
+    return;
+  }
 
-  // Strip empty objects in contributor key
-  bookData.rows[0].contributors = bookData.rows[0].contributors.filter(
-    (contributor) => Object.keys(contributor).length !== 0
+  // Check if publisher contains at least 2 characters
+  if (req.query.publisher && !(req.query.publisher.length >= 2)) {
+    res.status(400).send({
+      error: "Publisher must exceed at least 2 characters",
+    });
+    return;
+  }
+
+  // Check if contributor contains at least 2 characters
+  if (req.query.contributor && !(req.query.contributor.length >= 2)) {
+    res.status(400).send({
+      error: "Contributor must exceed at least 2 characters",
+    });
+    return;
+  }
+
+  const bookData = await database.relations.books.getBookBySearchParams(
+    req.query
   );
 
-  return res.status(200).send(bookData.rows[0]);
+  // Strip empty objects in contributor key
+  for (const book of bookData.rows) {
+    book.contributors = book.contributors.filter(
+      (contributor) => Object.keys(contributor).length !== 0
+    );
+  }
+
+  return res.status(200).send({
+    data: [...bookData.rows],
+  });
 }
 
 async function handleDeleteBook(req, res) {
