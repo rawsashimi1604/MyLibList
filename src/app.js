@@ -27,15 +27,13 @@ export default function (database) {
 
   // Enable CORS (Cross Origin Resource Sharing w/ frontend app)
   const corsOptions = {
-    origin:
-      process.env.NODE_ENV === "production"
-        ? "http://localhost:" + process.env.FRONTEND_PORT
-        : process.env.FRONTEND_APP_URL_LOCAL,
-    credentials: true, // access-control-allow-credentials:true
+    origin: "http://localhost:3000",
+    credentials: true,              // access-control-allow-credentials:true
     optionSuccessStatus: 200,
   };
 
   app.use(cors(corsOptions));
+
 
   // Routes
   app.use("/api/auth", makeAuthRouter(database));
