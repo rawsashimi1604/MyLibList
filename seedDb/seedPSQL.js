@@ -13,6 +13,10 @@ const database = databases.PSQLDatabase;
 console.log("seed script");
 const booksFromCSV = await cleanCSVData("./seedDb/csv_data/nlb_data.csv");
 
+// Max booksFromCSV.length (42000 ish)
+const NUMBER_OF_BOOKS_TO_ADD = 10000;
+
+
 async function batchSeedData(data, insertFunction) {
   // Insert into database... (1000 at a time)
   for (let i = 0; i < Math.ceil(data.length / 1000); i++) {
@@ -177,7 +181,6 @@ async function seedPublishers() {
 async function seedBooks() {
   return new Promise(async (resolve, reject) => {
     let bookCounter = 0;
-    let booksToSeed = 5000;
 
     let booksCache = [];
     let booksLanguagesCache = [];
@@ -190,7 +193,7 @@ async function seedBooks() {
     let booksContributorCache = [];
 
     // Add books
-    for (const book of booksFromCSV.slice(0, booksToSeed)) {
+    for (const book of booksFromCSV.slice(0, NUMBER_OF_BOOKS_TO_ADD)) {
       const booksRelation = {
         book_uuid: book.uuid,
         access_rights: book.access_rights,
@@ -308,7 +311,7 @@ async function seedBooks() {
       console.log(
         `${booksRelation.book_uuid} added. progress: ${
           bookCounter
-        }/${booksToSeed}`
+        }/${NUMBER_OF_BOOKS_TO_ADD}`
       );
     }
 
@@ -344,7 +347,7 @@ async function seedBooks() {
       database.relations.alternative_titles.batchInsertAltTitles
     );
 
-    for (const book of booksFromCSV.slice(0, booksToSeed)) {
+    for (const book of booksFromCSV.slice(0, NUMBER_OF_BOOKS_TO_ADD)) {
       const booksRelation = {
         book_uuid: book.uuid,
         access_rights: book.access_rights,
@@ -376,7 +379,7 @@ async function seedBooks() {
       console.log(
         `${booksRelation.book_uuid} contributor added. progress: ${
           bookCounter
-        }/${booksToSeed}`
+        }/${NUMBER_OF_BOOKS_TO_ADD}`
       );
     }
 
