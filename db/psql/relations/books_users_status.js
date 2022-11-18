@@ -44,23 +44,23 @@ function addBookUserStatus(book) {
   }
 }
 
-function updateBookUserStatus(status, timestamp, email, book){
-  try{
+function updateBookUserStatus(status, timestamp, email, book) {
+  try {
     const query = `UPDATE "books_users_status" SET status = $1, timestamp_updated = $2 WHERE email = $3 AND book_uuid = $4`;
     const params = [status, timestamp, email, book];
     return db.query(query, params);
-  } catch(err){
+  } catch (err) {
     console.log(err);
     throw err;
   }
 }
 
-function checkIfBookStatusAdded(user,book){
-  try{
+function checkIfBookStatusAdded(user, book) {
+  try {
     const query = `SELECT * FROM "books_users_status" WHERE email = $1 AND book_uuid = $2`;
-    const params = [user,book];
+    const params = [user, book];
     return db.query(query, params);
-  }catch (err){
+  } catch (err) {
     console.log(err);
     throw err;
   }

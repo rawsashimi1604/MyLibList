@@ -1,5 +1,5 @@
-export default function validateBookStatus(bookStatusObj){
-    if (typeof bookStatusObj !== "object") return false;
+export default function validateBookStatus(bookStatusObj) {
+  if (typeof bookStatusObj !== "object") return false;
 
-    return true;
+  return true;
 }

@@ -21,12 +21,12 @@ function getUsersBookmarksByID(book_uuid) {
   }
 }
 
-function checkIfBookmarkAdded(user,book){
-  try{
+function checkIfBookmarkAdded(user, book) {
+  try {
     const query = `SELECT * FROM "users_bookmarks" WHERE email = $1 AND book_uuid = $2`;
     const params = [user, book];
     return db.query(query, params);
-  }catch (err){
+  } catch (err) {
     console.log(err);
     throw err;
   }
@@ -41,7 +41,12 @@ function addBookUserBookmarks(book) {
       timestamp_bookmarked
     ) VALUES ($1, $2, $3, $4)`;
 
-    const params = [book.email, book.book_uuid, book.page, book.timestamp_bookmarked];
+    const params = [
+      book.email,
+      book.book_uuid,
+      book.page,
+      book.timestamp_bookmarked,
+    ];
 
     return db.query(query, params);
   } catch (err) {
@@ -50,17 +55,16 @@ function addBookUserBookmarks(book) {
   }
 }
 
-function updateBookmark(page, timestamp, email, book){
-  try{
+function updateBookmark(page, timestamp, email, book) {
+  try {
     const query = `UPDATE "users_bookmarks" SET page = $1, timestamp_bookmarked = $2 WHERE email = $3 AND book_uuid = $4`;
     const params = [page, timestamp, email, book];
     return db.query(query, params);
-  } catch (err){
+  } catch (err) {
     console.log(err);
     throw err;
   }
 }
-
 
 export default {
   getAllUsersBookmarks,

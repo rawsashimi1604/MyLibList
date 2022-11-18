@@ -41,4 +41,33 @@ function addLcsh(lcsh) {
   }
 }
 
-export default { getAllLcsh, getLCSHIdByLCSH, addLcsh };
+function batchInsertLCSH(lcshArray) {
+  try {
+    let valuesQuery = "VALUES ";
+
+    let count = 1;
+
+    for (const lcsh of lcshArray) {
+      if (count === lcshArray.length) {
+        valuesQuery = valuesQuery.concat(`($${count})`);
+      } else {
+        valuesQuery = valuesQuery.concat(`($${count}),`);
+      }
+
+      count++;
+    }
+
+    const query = `INSERT INTO "lcsh"(
+      lcsh_tag
+    ) ${valuesQuery} RETURNING *`;
+
+    const params = lcshArray;
+    console.log(query);
+    return db.query(query, params);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
+export default { getAllLcsh, getLCSHIdByLCSH, addLcsh, batchInsertLCSH };

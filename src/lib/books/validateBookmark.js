@@ -1,5 +1,5 @@
-export default function validateBookmark(bookmarkObj){
-    if (typeof bookmarkObj !== "object") return false;
+export default function validateBookmark(bookmarkObj) {
+  if (typeof bookmarkObj !== "object") return false;
 
-    return true;
+  return true;
 }

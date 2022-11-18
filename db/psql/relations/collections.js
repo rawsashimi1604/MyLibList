@@ -41,8 +41,38 @@ function addCollection(collection) {
   }
 }
 
+function batchInsertCollections(collectionArray) {
+  try {
+    let valuesQuery = "VALUES ";
+
+    let count = 1;
+
+    for (const collection of collectionArray) {
+      if (count === collectionArray.length) {
+        valuesQuery = valuesQuery.concat(`($${count})`);
+      } else {
+        valuesQuery = valuesQuery.concat(`($${count}),`);
+      }
+
+      count++;
+    }
+
+    const query = `INSERT INTO "collections"(
+      collection_title
+    ) ${valuesQuery} RETURNING *`;
+
+    const params = collectionArray;
+    console.log(query);
+    return db.query(query, params);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
 export default {
   getAllCollections,
   addCollection,
   getCollectionIDByCollection,
+  batchInsertCollections,
 };

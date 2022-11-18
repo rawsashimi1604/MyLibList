@@ -10,7 +10,7 @@ function getAllUsers() {
   }
 }
 
-function getUserByEmail(email){
+function getUserByEmail(email) {
   try {
     const query = `SELECT * FROM "users" WHERE email = $1`;
     const params = [email];
@@ -92,5 +92,5 @@ export default {
   checkUserExists,
   getHashedUserPassword,
   updateHashedUserPassword,
-  getUserByEmail
+  getUserByEmail,
 };

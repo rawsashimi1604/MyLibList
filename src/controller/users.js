@@ -61,38 +61,33 @@ async function handleGetUserData(req, res) {
 
   console.log(email);
 
-  if(!validateUser(email)){
+  if (!validateUser(email)) {
     res.status(400).send({
-      error: "Invalid email input"
+      error: "Invalid email input",
     });
     return;
   }
 
   const database = res.locals.database;
-  const getUserDataByEmailResult = await database.relations.users.getUserByEmail(email);
+  const getUserDataByEmailResult =
+    await database.relations.users.getUserByEmail(email);
 
-  
-  
-
-  if(getUserDataByEmailResult.rows.length >= 1){
+  if (getUserDataByEmailResult.rows.length >= 1) {
     res.status(200).send({
-      email : getUserDataByEmailResult.rows[0].email,
-      timestamp_registered: getUserDataByEmailResult.rows[0].timestamp_registered,
+      email: getUserDataByEmailResult.rows[0].email,
+      timestamp_registered:
+        getUserDataByEmailResult.rows[0].timestamp_registered,
       access_role: getUserDataByEmailResult.rows[0].access_role,
       first_name: getUserDataByEmailResult.rows[0].first_name,
-      last_name: getUserDataByEmailResult.rows[0].last_name
+      last_name: getUserDataByEmailResult.rows[0].last_name,
     });
     return;
   }
 
-
   res.status(400).send({
-    error: "User is not registered"
+    error: "User is not registered",
   });
   return;
-  
-
-
 
   res.send("User route...");
 }

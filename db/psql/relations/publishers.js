@@ -41,4 +41,38 @@ function addPublisher(publisher) {
   }
 }
 
-export default { getAllPublishers, addPublisher, getPublishedByIDByPublisher };
+function batchInsertPublishers(publisherArray) {
+  try {
+    let valuesQuery = "VALUES ";
+
+    let count = 1;
+
+    for (const publisher of publisherArray) {
+      if (count === publisherArray.length) {
+        valuesQuery = valuesQuery.concat(`($${count})`);
+      } else {
+        valuesQuery = valuesQuery.concat(`($${count}),`);
+      }
+
+      count++;
+    }
+
+    const query = `INSERT INTO "publishers"(
+      publisher
+    ) ${valuesQuery} RETURNING *`;
+
+    const params = publisherArray;
+    console.log(query);
+    return db.query(query, params);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
+export default {
+  getAllPublishers,
+  addPublisher,
+  getPublishedByIDByPublisher,
+  batchInsertPublishers,
+};

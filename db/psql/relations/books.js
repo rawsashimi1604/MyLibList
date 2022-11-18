@@ -257,6 +257,58 @@ function getTopBooksByLikes(numberOfBooks) {
   }
 }
 
+function batchInsertBooks(booksArray) {
+  try {
+    let valuesQuery = "VALUES ";
+
+    let count = 1;
+
+    // Insert 8 times
+    // ($1, $2, $3, $4, $5, $6, $7, $8)
+    for (let i = 1; i <= booksArray.length; i++) {
+      let str = "(";
+      for (let j = 1; j <= Object.keys(booksArray[0]).length; j++) {
+        // Last iteration dun add comma
+        if (j === Object.keys(booksArray[0]).length)
+          str = str.concat(
+            `$${j + (i - 1) * Object.keys(booksArray[0]).length}`
+          );
+        else
+          str = str.concat(
+            `$${j + (i - 1) * Object.keys(booksArray[0]).length},`
+          );
+      }
+      str = str.concat(")");
+      valuesQuery = valuesQuery.concat(str);
+
+      if (i !== booksArray.length) valuesQuery = valuesQuery.concat(",");
+    }
+
+    const query = `INSERT INTO "books"(
+      book_uuid,
+      access_rights,
+      rights,
+      abstract,
+      title,
+      uri,
+      date_created,
+      description
+    ) ${valuesQuery} RETURNING *`;
+
+    const params = [];
+    for (const book of booksArray) {
+      for (const value of Object.values(book)) {
+        params.push(value);
+      }
+    }
+
+    return db.query(query, params);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
 export default {
   getAllBooks,
   addBook,
@@ -265,4 +317,5 @@ export default {
   getBookByUUID,
   getBookBySearchParams,
   getTopBooksByLikes,
+  batchInsertBooks,
 };
