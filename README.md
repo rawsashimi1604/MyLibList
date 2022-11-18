@@ -18,6 +18,8 @@ This is our server component for our project for module **ICT2103 Information Ma
 - Node.js
 - Express.js
 - Prettier
+- REST API
+- JSON Web Tokens (JWT)
 
 ## Requirements
 
@@ -113,10 +115,15 @@ docker volume create postgres-data
 // Check if volume was created
 docker volume ls
 ```
+- Clone the github repo
+```
+git clone https://github.com/rawsashimi1604/MyLibList_server.git
+cd MyLibList_server
+```
 
 - Create the `.env` file and put it in the root directory.
 - Run the command `npm run docker:dev` to start the docker container.
-- You should see this if the container was run correctly.
+- You should see this if the container was run correctly, app should be functioning.
 
 ```
 Server has successfully started on port: 8085
