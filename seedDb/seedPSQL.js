@@ -16,7 +16,6 @@ const booksFromCSV = await cleanCSVData("./seedDb/csv_data/nlb_data.csv");
 // Max booksFromCSV.length (42000 ish)
 const NUMBER_OF_BOOKS_TO_ADD = 10000;
 
-
 async function batchSeedData(data, insertFunction) {
   // Insert into database... (1000 at a time)
   for (let i = 0; i < Math.ceil(data.length / 1000); i++) {
@@ -309,9 +308,7 @@ async function seedBooks() {
 
       bookCounter++;
       console.log(
-        `${booksRelation.book_uuid} added. progress: ${
-          bookCounter
-        }/${NUMBER_OF_BOOKS_TO_ADD}`
+        `${booksRelation.book_uuid} added. progress: ${bookCounter}/${NUMBER_OF_BOOKS_TO_ADD}`
       );
     }
 
@@ -377,18 +374,15 @@ async function seedBooks() {
       }
       bookCounter++;
       console.log(
-        `${booksRelation.book_uuid} contributor added. progress: ${
-          bookCounter
-        }/${NUMBER_OF_BOOKS_TO_ADD}`
+        `${booksRelation.book_uuid} contributor added. progress: ${bookCounter}/${NUMBER_OF_BOOKS_TO_ADD}`
       );
     }
 
-    
     await batchSeedData(
       booksContributorCache,
       database.relations.books_contributors.batchInsertBooksContributors
     );
-    
+
     resolve();
   });
 }

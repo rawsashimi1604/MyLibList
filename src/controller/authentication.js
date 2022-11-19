@@ -22,7 +22,6 @@ async function handleUserLogin(req, res) {
     const checkUserExists = await database.relations.users.checkUserExists(
       user.email
     );
-    console.log(checkUserExists);
     if (checkUserExists.rows.length === 0)
       return res.status(400).send("Invalid email.");
 
@@ -47,10 +46,21 @@ async function handleUserLogin(req, res) {
       const refreshTokenResult =
         await database.relations.refresh_token.addToken(refreshToken);
 
+      // Get user data
+      const userDataResult = await database.relations.users.getUserByEmail(
+        user.email
+      );
+
+      // Don't send password to client
+      const userDataFromDatabase = userDataResult.rows[0];
+      delete userDataFromDatabase.password;
+
       // Return access token to logged in user.
-      res
-        .status(200)
-        .send({ accessToken: accessToken, refreshToken: refreshToken });
+      res.status(200).send({
+        data: userDataFromDatabase,
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+      });
     }
 
     // Incorrect password...

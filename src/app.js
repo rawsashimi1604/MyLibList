@@ -26,7 +26,7 @@ export default function (database) {
   app.use(express.json());
 
   // Disable etag to remove 304 errors
-  app.disable('etag');
+  app.disable("etag");
 
   // Enable CORS (Cross Origin Resource Sharing w/ frontend app)
   const corsOptions = {

@@ -11,7 +11,6 @@ export default function (database) {
   router.use((req, res, next) => injectDatabase(req, res, next, database));
 
   // Routes
-  router.get("/", AuthenticationController.handleIndex);
   router.post(
     "/login",
     asyncErrorHandler(AuthenticationController.handleUserLogin)
@@ -24,6 +23,7 @@ export default function (database) {
     "/token",
     asyncErrorHandler(AuthenticationController.handleNewToken)
   );
+  router.get("/", AuthenticationController.handleIndex);
 
   return router;
 }

@@ -12,7 +12,7 @@ function getAllUsers() {
 
 function getUserByEmail(email) {
   try {
-    const query = `SELECT * FROM "users" WHERE email = $1`;
+    const query = `SELECT * FROM "users" WHERE email = $1 LIMIT 1`;
     const params = [email];
     return db.query(query, params);
   } catch (err) {

@@ -115,7 +115,9 @@ docker volume create postgres-data
 // Check if volume was created
 docker volume ls
 ```
+
 - Clone the github repo
+
 ```
 git clone https://github.com/rawsashimi1604/MyLibList_server.git
 cd MyLibList_server
