@@ -225,7 +225,11 @@ function getBookBySearchParams(queryObj) {
     if (where) where = `WHERE ${where}`;
 
     const query = `
-      ${bookQuery}
+      ${bookSelectQuery}, COUNT(blikes.book_uuid) AS likes
+      FROM "books" b
+      ${joinQuery}
+      LEFT OUTER JOIN "books_users_likes" blikes
+        ON blikes.book_uuid = b.book_uuid
       ${where}
       GROUP BY b.book_uuid
     `;
