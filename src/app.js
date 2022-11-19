@@ -25,6 +25,9 @@ export default function (database) {
   // Enable parsing of JSON in req.body
   app.use(express.json());
 
+  // Disable etag to remove 304 errors
+  app.disable('etag');
+
   // Enable CORS (Cross Origin Resource Sharing w/ frontend app)
   const corsOptions = {
     origin: "http://localhost:3000",

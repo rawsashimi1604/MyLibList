@@ -292,7 +292,7 @@ async function handleGetTopBooks(req, res) {
   const database = res.locals.database;
   const topBooksResult = await database.relations.books.getTopBooksByLikes(20);
 
-  res.send({
+  res.status(200).send({
     data: [...topBooksResult.rows],
   });
 }

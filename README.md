@@ -123,7 +123,7 @@ cd MyLibList_server
 
 - Create the `.env` file and put it in the root directory.
 - Run the command `npm run docker:dev` to start the docker container.
-- You should see this if the container was run correctly, app should be functioning.
+- You should see this if the container was run correctly, backend app should be functioning.
 
 ```
 Server has successfully started on port: 8085
