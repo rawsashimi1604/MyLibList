@@ -196,8 +196,16 @@ async function handleAddLike(req, res) {
     );
 
   if (checkIfBookIsLiked.rows.length >= 1) {
-    res.status(400).send("User has already liked this book");
-    return;
+    const deleteLike = await database.relations.books_users_likes.deleteBookUsersLike(likeBookData.email, likeBookData.book_uuid);
+
+    if(deleteLike.rowCount >= 1){
+      res.status(200).send({
+          email: `${likeBookData.email}`,
+          book_uuid: `${likeBookData.book_uuid}`,
+          message: "Successfully unliked book.",
+      });
+      return;
+    }
   }
   likeBookData["timestamp_liked"] = getCurrentTimestamp();
 
