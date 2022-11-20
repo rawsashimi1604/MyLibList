@@ -22,17 +22,13 @@ async function handleGetSpecificReadingList(req, res) {
   const getReadingListByIDResult =
     await database.relations.reading_lists.getReadingListByID(readingListID);
 
-  if (getReadingListByIDResult.rows.length >= 1) {
-    res.status(200).send({
-      reading_list: getReadingListByIDResult.rows[0],
-      message: `Successfully get reading list using ID: ${readingListID}.`,
-    });
-    return;
-  }
-
-  // if no readinglist was found send a 400 error
-  res.status(400).send({
-    error: `Could not find a reading list using ID: ${readingListID}.`,
+  const getBooksInReadingListResult = 
+    await database.relations.book_lists.getAllBooksFromReadingList(readingListID);
+  
+  res.status(200).send({
+    reading_list: getReadingListByIDResult.rows[0],
+    books: getBooksInReadingListResult.rows,
+    message: `Successfully get reading list using ID: ${readingListID}.`,
   });
   return;
 }

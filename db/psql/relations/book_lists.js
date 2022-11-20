@@ -53,9 +53,25 @@ function deleteBookFromReadingListByID(bookList) {
   }
 }
 
+function getAllBooksFromReadingList(readingListId) {
+  try {
+    const query = `
+      SELECT * FROM "books_lists" bl
+      INNER JOIN "books" b ON bl.book_uuid = b.book_uuid
+      WHERE bl.reading_list_id = $1
+    `;
+    const params = [readingListId];
+    return db.query(query, params);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
 export default {
   getAllBookList,
   addBookList,
   checkBookInReadingListExists,
   deleteBookFromReadingListByID,
+  getAllBooksFromReadingList
 };
