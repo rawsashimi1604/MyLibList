@@ -212,5 +212,26 @@ CREATE TABLE IF NOT EXISTS "books_contributors"(
     PRIMARY KEY (contributor_id, book_uuid, contributor_type)
 );
 
+CREATE INDEX idx_bookTitle ON "books"(
+    title
+);
 
+CREATE INDEX idx_bookAltTitle ON "alternative_titles"(
+    alternative_title
+);
 
+CREATE INDEX idx_bookSubject ON "subjects"(
+    subject_title
+);
+
+CREATE INDEX idx_bookPublisher ON "publishers"(
+    publisher
+);
+
+CREATE INDEX idx_bookContributor ON "contributors"(
+    contributor
+);
+
+CREATE INDEX idx_bookLanguage ON "languages"(
+    language
+);
