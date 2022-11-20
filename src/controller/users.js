@@ -190,20 +190,33 @@ async function handleDeleteUser(req, res) {
 
 async function handleGetLikeBooks(req, res) {
   // Check the database for the reading list
+
+  console.log('req.body')
+  console.log(req.body);
+  // Check if email was specified
+  if (!req.body.email) {
+    res.status(400).send({
+      error: `Email not specified`,
+    });
+    return;
+  }
+
   const database = res.locals.database;
   const getLikeBooksResult =
-    await database.relations.books_users_likes.getAllBooksUsersLikes();
+    await database.relations.books_users_likes.getAllBooksUsersLikes(req.body.email);
+  console.log(getLikeBooksResult)
+
   if (getLikeBooksResult.rows.length >= 1) {
     res.status(200).send({
-      books_users_likes: getLikeBooksResult.rows[0],
+      data: getLikeBooksResult.rows,
       message: `Successfully get all books users likes.`,
     });
     return;
   }
 
-  // if no readinglist was found send a 400 error
+  // if no books was found send a 400 error
   res.status(400).send({
-    error: `Could not find all books users likes.`,
+    error: `No likes were found...`,
   });
   return;
 }

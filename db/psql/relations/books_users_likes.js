@@ -1,9 +1,14 @@
 import db from "../config.js";
 
-function getAllBooksUsersLikes() {
+function getAllBooksUsersLikes(email) {
   try {
-    const query = `SELECT * FROM "books_users_likes"`;
-    return db.query(query);
+    const query = `
+      SELECT b.book_uuid, b.title FROM "books_users_likes" 
+      INNER JOIN "books" b ON "books_users_likes".book_uuid = b.book_uuid
+      WHERE email=$1 
+    `;
+    const params = [email]
+    return db.query(query, params);
   } catch (err) {
     console.log(err);
     throw err;

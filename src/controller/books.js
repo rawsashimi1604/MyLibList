@@ -189,7 +189,7 @@ async function handleAddLike(req, res) {
     );
 
   if (checkIfBookIsLiked.rows.length >= 1) {
-    res.status(400).send("User has already liked the book");
+    res.status(400).send("User has already liked this book");
     return;
   }
   likeBookData["timestamp_liked"] = getCurrentTimestamp();

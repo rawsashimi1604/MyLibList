@@ -20,10 +20,6 @@ export default function (database) {
     "/all",
     asyncErrorHandler(ReadingListsController.handleAllReadingList)
   );
-  router.get(
-    "/:readingListID",
-    asyncErrorHandler(ReadingListsController.handleGetSpecificReadingList)
-  );
   router.post(
     "/addReadingList",
     asyncErrorHandler(ReadingListsController.handleAddReadingList)

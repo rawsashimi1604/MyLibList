@@ -19,7 +19,7 @@ export default function (database) {
     asyncErrorHandler(UsersController.handleChangePassword)
   );
   router.delete("/", asyncErrorHandler(UsersController.handleDeleteUser));
-  router.get(
+  router.post(
     "/likedBooks",
     asyncErrorHandler(UsersController.handleGetLikeBooks)
   );
