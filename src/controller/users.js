@@ -5,7 +5,6 @@ import validateUser from "../lib/users/validateUser.js";
 import getCurrentTimestamp from "../lib/utils/getCurrentTimestamp.js";
 
 import bcrypt from "bcrypt";
-import { application } from "express";
 
 async function handleRegisterUser(req, res) {
   console.log(req.body);
@@ -189,10 +188,8 @@ async function handleDeleteUser(req, res) {
 }
 
 async function handleGetLikeBooks(req, res) {
-  // Check the database for the reading list
 
-  console.log("req.body");
-  console.log(req.body);
+  // Check the database for the reading list
   // Check if email was specified
   if (!req.body.email) {
     res.status(400).send({
@@ -210,6 +207,26 @@ async function handleGetLikeBooks(req, res) {
 
   res.status(200).send({
     data: getLikeBooksResult.rows,
+    message: `Successfully get all books users likes.`,
+  });
+  return;
+}
+
+async function handleGetReadingBooks(req, res) {
+   // Receive JSON from frontend
+  if (!req.body.email) {
+    res.status(400).send({
+      error: `Email not specified`,
+    });
+    return;
+  }
+
+  const database = res.locals.database;
+  const getUserReadingListsResult = await database.relations.reading_lists.getAllReadingListsByEmail(req.body.email);
+
+
+  res.status(200).send({
+    data: getUserReadingListsResult.rows,
     message: `Successfully get all books users likes.`,
   });
   return;
@@ -249,6 +266,8 @@ async function handleGetSpecificBookmark(req, res) {
   });
   return;
 }
+
+
 
 async function handleGetBookStatus(req, res) {
   // Check whetehr client sent a request to a route with valid BIGSERIAL parameter
@@ -293,4 +312,5 @@ export default {
   handleGetLikeBooks,
   handleGetSpecificBookmark,
   handleGetBookStatus,
+  handleGetReadingBooks
 };
