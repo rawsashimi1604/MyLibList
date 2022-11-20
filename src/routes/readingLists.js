@@ -13,10 +13,6 @@ export default function (database) {
 
   // Routes
   router.get(
-    "/:readingListID",
-    asyncErrorHandler(ReadingListsController.handleGetSpecificReadingList)
-  );
-  router.get(
     "/all",
     asyncErrorHandler(ReadingListsController.handleAllReadingList)
   );
@@ -35,6 +31,10 @@ export default function (database) {
   router.delete(
     "/book",
     asyncErrorHandler(ReadingListsController.handleDeleteBookFromReadingList)
+  );
+  router.get(
+    "/:readingListID",
+    asyncErrorHandler(ReadingListsController.handleGetSpecificReadingList)
   );
 
   return router;

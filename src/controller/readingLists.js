@@ -41,7 +41,8 @@ async function handleAllReadingList(req, res) {
   const database = res.locals.database;
   const readingListsResult =
     await database.relations.reading_lists.getAllReadingList();
-  res.status(200).send(readingListsResult.rows);
+
+
   if (readingListsResult.rows.length >= 1) {
     res.status(200).send({
       data: readingListsResult.rows,
