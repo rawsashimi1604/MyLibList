@@ -3,7 +3,7 @@ import db from "../config.js";
 function getAllBooksUsersLikes(email) {
   try {
     const query = `
-      SELECT b.book_uuid, b.title FROM "books_users_likes" 
+      SELECT b.book_uuid, b.title, b.date_created FROM "books_users_likes" 
       INNER JOIN "books" b ON "books_users_likes".book_uuid = b.book_uuid
       WHERE email=$1 
     `;
