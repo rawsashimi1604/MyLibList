@@ -32,6 +32,17 @@ function addBookUsersLikes(book) {
   }
 }
 
+function deleteBookUsersLike(user,book){
+  try{
+    const query = `DELETE FROM "books_users_likes" WHERE email = $1 AND book_uuid = $2`;
+    const params = [user,book];
+    return db.query(query, params);
+  } catch (err){
+    console.log(err);
+    throw err;
+  }
+}
+
 function getNumberOfLikes(book_uuid) {
   try {
     const query = `
@@ -64,4 +75,5 @@ export default {
   getAllBooksUsersLikes,
   addBookUsersLikes,
   checkIfBookIsLiked,
+  deleteBookUsersLike,
 };
