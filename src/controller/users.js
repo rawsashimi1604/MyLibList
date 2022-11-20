@@ -191,7 +191,7 @@ async function handleDeleteUser(req, res) {
 async function handleGetLikeBooks(req, res) {
   // Check the database for the reading list
 
-  console.log('req.body')
+  console.log("req.body");
   console.log(req.body);
   // Check if email was specified
   if (!req.body.email) {
@@ -203,8 +203,10 @@ async function handleGetLikeBooks(req, res) {
 
   const database = res.locals.database;
   const getLikeBooksResult =
-    await database.relations.books_users_likes.getAllBooksUsersLikes(req.body.email);
-  console.log(getLikeBooksResult)
+    await database.relations.books_users_likes.getAllBooksUsersLikes(
+      req.body.email
+    );
+  console.log(getLikeBooksResult);
 
   if (getLikeBooksResult.rows.length >= 1) {
     res.status(200).send({

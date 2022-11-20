@@ -225,14 +225,14 @@ function getBookBySearchParams(queryObj) {
     if (where) where = `WHERE ${where}`;
 
     const query = `
-      ${bookSelectQuery}, COUNT(blikes.book_uuid) AS likes
+      ${bookSelectQuery}
       FROM "books" b
       ${joinQuery}
-      LEFT OUTER JOIN "books_users_likes" blikes
-        ON blikes.book_uuid = b.book_uuid
       ${where}
       GROUP BY b.book_uuid
     `;
+
+    console.log(query);
 
     return db.query(query, params);
   } catch (err) {
@@ -244,7 +244,7 @@ function getBookBySearchParams(queryObj) {
 function getTopBooksByLikes(numberOfBooks) {
   try {
     const query = `
-      ${bookSelectQuery}, COUNT(blikes.book_uuid) AS likes
+      ${bookSelectQuery}
       FROM "books" b
       ${joinQuery}
       LEFT OUTER JOIN "books_users_likes" blikes
@@ -253,6 +253,9 @@ function getTopBooksByLikes(numberOfBooks) {
       ORDER BY COUNT(blikes.book_uuid) DESC, b.title
       LIMIT $1
     `;
+
+    console.log(query);
+
     const params = [numberOfBooks];
     return db.query(query, params);
   } catch (err) {

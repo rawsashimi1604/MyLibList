@@ -7,7 +7,7 @@ function getAllBooksUsersLikes(email) {
       INNER JOIN "books" b ON "books_users_likes".book_uuid = b.book_uuid
       WHERE email=$1 
     `;
-    const params = [email]
+    const params = [email];
     return db.query(query, params);
   } catch (err) {
     console.log(err);
@@ -32,6 +32,22 @@ function addBookUsersLikes(book) {
   }
 }
 
+function getNumberOfLikes(book_uuid) {
+  try {
+    const query = `
+      SELECT COUNT(*) FROM "books_users_likes"
+      WHERE book_uuid=$1
+    `;
+
+    const params = [book_uuid];
+
+    return db.query(query, params);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
 function checkIfBookIsLiked(user, book) {
   try {
     const query = `SELECT * FROM "books_users_likes" WHERE email = $1 AND book_uuid = $2`;
@@ -43,4 +59,9 @@ function checkIfBookIsLiked(user, book) {
   }
 }
 
-export default { getAllBooksUsersLikes, addBookUsersLikes, checkIfBookIsLiked };
+export default {
+  getNumberOfLikes,
+  getAllBooksUsersLikes,
+  addBookUsersLikes,
+  checkIfBookIsLiked,
+};

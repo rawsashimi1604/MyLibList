@@ -37,10 +37,17 @@ async function handleIndex(req, res) {
   );
 
   // Strip empty objects in contributor key
+  // Insert number of likes
   for (const book of bookData.rows) {
     book.contributors = book.contributors.filter(
       (contributor) => Object.keys(contributor).length !== 0
     );
+
+    const likesData =
+      await database.relations.books_users_likes.getNumberOfLikes(
+        book.book_uuid
+      );
+    book["likes"] = likesData.rows[0].count;
   }
 
   return res.status(200).send({
@@ -291,6 +298,14 @@ async function handleGetTopBooks(req, res) {
   // Get top 50 books by likes
   const database = res.locals.database;
   const topBooksResult = await database.relations.books.getTopBooksByLikes(20);
+
+  for (const book of topBooksResult.rows) {
+    const likesData =
+      await database.relations.books_users_likes.getNumberOfLikes(
+        book.book_uuid
+      );
+    book["likes"] = likesData.rows[0].count;
+  }
 
   res.status(200).send({
     data: [...topBooksResult.rows],
