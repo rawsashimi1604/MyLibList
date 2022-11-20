@@ -208,17 +208,9 @@ async function handleGetLikeBooks(req, res) {
     );
   console.log(getLikeBooksResult);
 
-  if (getLikeBooksResult.rows.length >= 1) {
-    res.status(200).send({
-      data: getLikeBooksResult.rows,
-      message: `Successfully get all books users likes.`,
-    });
-    return;
-  }
-
-  // if no books was found send a 400 error
-  res.status(400).send({
-    error: `No likes were found...`,
+  res.status(200).send({
+    data: getLikeBooksResult.rows,
+    message: `Successfully get all books users likes.`,
   });
   return;
 }
