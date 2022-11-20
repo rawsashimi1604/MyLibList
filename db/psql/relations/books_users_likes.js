@@ -3,7 +3,7 @@ import db from "../config.js";
 function getAllBooksUsersLikes(email) {
   try {
     const query = `
-      SELECT b.book_uuid, b.title FROM "books_users_likes" 
+      SELECT b.book_uuid, b.title, b.date_created FROM "books_users_likes" 
       INNER JOIN "books" b ON "books_users_likes".book_uuid = b.book_uuid
       WHERE email=$1 
     `;
@@ -27,6 +27,17 @@ function addBookUsersLikes(book) {
 
     return db.query(query, params);
   } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
+function deleteBookUsersLike(user,book){
+  try{
+    const query = `DELETE FROM "books_users_likes" WHERE email = $1 AND book_uuid = $2`;
+    const params = [user,book];
+    return db.query(query, params);
+  } catch (err){
     console.log(err);
     throw err;
   }
@@ -64,4 +75,5 @@ export default {
   getAllBooksUsersLikes,
   addBookUsersLikes,
   checkIfBookIsLiked,
+  deleteBookUsersLike,
 };

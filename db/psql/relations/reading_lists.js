@@ -54,9 +54,23 @@ function deleteReadingListByID(reading_list_id) {
   }
 }
 
+function getAllReadingListsByEmail(email) {
+  try {
+    const query = `
+      SELECT * FROM "reading_lists" WHERE email = $1
+    `
+    const params = [email];
+    return db.query(query, params);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
 export default {
   getAllReadingList,
   addReadingList,
   getReadingListByID,
   deleteReadingListByID,
+  getAllReadingListsByEmail
 };

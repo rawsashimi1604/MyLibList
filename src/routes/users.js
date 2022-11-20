@@ -23,6 +23,10 @@ export default function (database) {
     "/likedBooks",
     asyncErrorHandler(UsersController.handleGetLikeBooks)
   );
+  router.post(
+    "/readingLists",
+    asyncErrorHandler(UsersController.handleGetReadingBooks)
+  );
   router.get(
     "/bookmark/:bookUUID",
     asyncErrorHandler(UsersController.handleGetBookmark)
