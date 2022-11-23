@@ -60,7 +60,7 @@ async function seedMongo() {
   await client.close();
 }
 
-seedMongo();
+await seedMongo();
 
 console.log("\n\n\nSCRIPT HAS FINISHED.......");
 console.log("STARTING API APP.......\n\n\n");
