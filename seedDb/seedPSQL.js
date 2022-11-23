@@ -14,7 +14,7 @@ console.log("seed script");
 const booksFromCSV = await cleanCSVData("./seedDb/csv_data/nlb_data.csv");
 
 // Max booksFromCSV.length (42000 ish)
-const NUMBER_OF_BOOKS_TO_ADD = 10000;
+const NUMBER_OF_BOOKS_TO_ADD = 5000;
 
 async function batchSeedData(data, insertFunction) {
   // Insert into database... (1000 at a time)
