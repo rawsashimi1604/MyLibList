@@ -64,7 +64,7 @@ async function seedBooksExample(){
 
 
 
-seedBooksExample();
+await seedBooksExample();
 
 console.log("\n\n\nSCRIPT HAS FINISHED.......");
 console.log("STARTING API APP.......\n\n\n");
