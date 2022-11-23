@@ -73,5 +73,5 @@ export default {
   addBookList,
   checkBookInReadingListExists,
   deleteBookFromReadingListByID,
-  getAllBooksFromReadingList
+  getAllBooksFromReadingList,
 };

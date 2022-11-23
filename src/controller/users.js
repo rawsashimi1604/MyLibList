@@ -188,7 +188,6 @@ async function handleDeleteUser(req, res) {
 }
 
 async function handleGetLikeBooks(req, res) {
-
   // Check the database for the reading list
   // Check if email was specified
   if (!req.body.email) {
@@ -213,7 +212,7 @@ async function handleGetLikeBooks(req, res) {
 }
 
 async function handleGetReadingBooks(req, res) {
-   // Receive JSON from frontend
+  // Receive JSON from frontend
   if (!req.body.email) {
     res.status(400).send({
       error: `Email not specified`,
@@ -222,8 +221,10 @@ async function handleGetReadingBooks(req, res) {
   }
 
   const database = res.locals.database;
-  const getUserReadingListsResult = await database.relations.reading_lists.getAllReadingListsByEmail(req.body.email);
-
+  const getUserReadingListsResult =
+    await database.relations.reading_lists.getAllReadingListsByEmail(
+      req.body.email
+    );
 
   res.status(200).send({
     data: getUserReadingListsResult.rows,
@@ -266,8 +267,6 @@ async function handleGetSpecificBookmark(req, res) {
   });
   return;
 }
-
-
 
 async function handleGetBookStatus(req, res) {
   // Check whetehr client sent a request to a route with valid BIGSERIAL parameter
@@ -312,5 +311,5 @@ export default {
   handleGetLikeBooks,
   handleGetSpecificBookmark,
   handleGetBookStatus,
-  handleGetReadingBooks
+  handleGetReadingBooks,
 };

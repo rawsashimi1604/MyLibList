@@ -22,9 +22,11 @@ async function handleGetSpecificReadingList(req, res) {
   const getReadingListByIDResult =
     await database.relations.reading_lists.getReadingListByID(readingListID);
 
-  const getBooksInReadingListResult = 
-    await database.relations.book_lists.getAllBooksFromReadingList(readingListID);
-  
+  const getBooksInReadingListResult =
+    await database.relations.book_lists.getAllBooksFromReadingList(
+      readingListID
+    );
+
   res.status(200).send({
     reading_list: getReadingListByIDResult.rows[0],
     books: getBooksInReadingListResult.rows,
@@ -37,7 +39,6 @@ async function handleAllReadingList(req, res) {
   const database = res.locals.database;
   const readingListsResult =
     await database.relations.reading_lists.getAllReadingList();
-
 
   if (readingListsResult.rows.length >= 1) {
     res.status(200).send({

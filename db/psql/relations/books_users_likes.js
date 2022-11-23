@@ -32,12 +32,12 @@ function addBookUsersLikes(book) {
   }
 }
 
-function deleteBookUsersLike(user,book){
-  try{
+function deleteBookUsersLike(user, book) {
+  try {
     const query = `DELETE FROM "books_users_likes" WHERE email = $1 AND book_uuid = $2`;
-    const params = [user,book];
+    const params = [user, book];
     return db.query(query, params);
-  } catch (err){
+  } catch (err) {
     console.log(err);
     throw err;
   }

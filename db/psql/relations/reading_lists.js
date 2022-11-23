@@ -58,7 +58,7 @@ function getAllReadingListsByEmail(email) {
   try {
     const query = `
       SELECT * FROM "reading_lists" WHERE email = $1
-    `
+    `;
     const params = [email];
     return db.query(query, params);
   } catch (err) {
@@ -72,5 +72,5 @@ export default {
   addReadingList,
   getReadingListByID,
   deleteReadingListByID,
-  getAllReadingListsByEmail
+  getAllReadingListsByEmail,
 };
