@@ -25,6 +25,8 @@ async function handleRegisterUser(req, res) {
       user.email
     );
 
+    console.log("worked")
+
     if (!checkUserExists.rows.length === 0) {
       res.status(400).send("Failed to register.");
       return;

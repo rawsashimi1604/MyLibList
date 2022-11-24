@@ -23,14 +23,19 @@ async function addReadingList(readingList) {
     await client.connect();
 
     const db = client.db("defaultdb");
-    const objectId = await db
+
+    // TODO Refactor into another function
+
+    const objectId = db
       .collection("users")
       .find({ email: readingList.email });
+
     console.log(await objectId.toArray());
+    
     db.collection("reading_lists").insertOne({
       name: readingList.name,
       timestamp_created_on: readingList.timestamp_created_on,
-      user: DBRef("users", ObjectId(objectId)),
+      user: DBRef("users", ObjectId(objectId._id)),
     });
   } catch (err) {
     console.log(err);

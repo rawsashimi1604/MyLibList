@@ -1,4 +1,4 @@
-// import UserRelation from "./users.js";
+import UserRelation from "./users.js";
 // import RefreshTokenRelation from "./refresh_token.js";
 // import AlternativeTitlesRelation from "./alternative_titles.js";
 // import BookListRelation from "./book_lists.js";
@@ -10,7 +10,7 @@
 // import BooksSubjectsRelation from "./books_subjects.js";
 // import BooksUsersLikesRelation from "./books_users_likes.js";
 // import BooksUsersStatusRelation from "./books_users_status.js";
-// import BooksRelation from "./books.js";
+import BooksRelation from "./books.js";
 // import CollectionsRelation from "./collections.js";
 // import ContributorsRelation from "./contributors.js";
 // import LanguagesRelation from "./languages.js";
@@ -20,7 +20,7 @@ import ReadingListsRelation from "./reading_lists.js";
 // import SubjectsRelation from "./subjects.js";
 // import UsersBookmarksRelation from "./users_bookmarks.js";
 
-// const users = UserRelation;
+const users = UserRelation;
 // const refresh_token = RefreshTokenRelation;
 
 // const alternative_titles = AlternativeTitlesRelation;
@@ -33,7 +33,7 @@ import ReadingListsRelation from "./reading_lists.js";
 // const books_subjects = BooksSubjectsRelation;
 // const books_users_likes = BooksUsersLikesRelation;
 // const books_users_status = BooksUsersStatusRelation;
-// const books = BooksRelation;
+const books = BooksRelation;
 // const collections = CollectionsRelation;
 // const contributors = ContributorsRelation;
 // const languages = LanguagesRelation;
@@ -44,7 +44,7 @@ const reading_lists = ReadingListsRelation;
 // const users_bookmarks = UsersBookmarksRelation;
 
 export default {
-  // users,
+  users,
   // refresh_token,
   // alternative_titles,
   // book_lists,
@@ -63,6 +63,7 @@ export default {
   // lcsh,
   // publishers,
   reading_lists,
+  books
   // subjects,
   // users_bookmarks,
 };
