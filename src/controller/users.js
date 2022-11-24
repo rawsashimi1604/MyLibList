@@ -25,9 +25,7 @@ async function handleRegisterUser(req, res) {
       user.email
     );
 
-    console.log("worked")
-
-    if (!checkUserExists.rows.length === 0) {
+    if (!(checkUserExists.rows.length === 0)) {
       res.status(400).send("Failed to register.");
       return;
     }
@@ -60,8 +58,6 @@ async function handleRegisterUser(req, res) {
 async function handleGetUserData(req, res) {
   const email = req.query.email;
 
-  console.log(email);
-
   if (!validateUser(email)) {
     res.status(400).send({
       error: "Invalid email input",
@@ -90,7 +86,6 @@ async function handleGetUserData(req, res) {
   });
   return;
 
-  res.send("User route...");
 }
 
 async function handleChangePassword(req, res) {
