@@ -28,15 +28,24 @@ async function addReadingList(readingList) {
 
     const objectId = db
       .collection("users")
-      .find({ email: readingList.email });
+      .find({ email: readingList.email })
+      .toArray();
 
-    console.log(await objectId.toArray());
-    
-    db.collection("reading_lists").insertOne({
+    const added = await db.collection("reading_lists").insertOne({
       name: readingList.name,
       timestamp_created_on: readingList.timestamp_created_on,
       user: DBRef("users", ObjectId(objectId._id)),
     });
+
+    console.log(added);
+    const res = await db
+      .collection("reading_lists")
+      .find({ _id: added.insertedId })
+      .toArray();
+
+    return {
+      rows: res,
+    };
   } catch (err) {
     console.log(err);
     throw err;
