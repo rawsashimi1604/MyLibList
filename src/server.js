@@ -6,7 +6,8 @@ import databases from "../db/index.js";
 setupEnv("../../.env");
 
 // Create PostgreSQL database object (current database object in use)
-const database = databases.PSQLDatabase;
+// const database = databases.PSQLDatabase;
+const database = databases.MongoDatabase;
 
 // Inject database into express.js app... (Dependency Injection)
 const app = makeApp(database);
