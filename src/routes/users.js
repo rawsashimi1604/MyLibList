@@ -18,7 +18,6 @@ export default function (database) {
     "/changePassword",
     asyncErrorHandler(UsersController.handleChangePassword)
   );
-  router.delete("/", asyncErrorHandler(UsersController.handleDeleteUser));
   router.post(
     "/likedBooks",
     asyncErrorHandler(UsersController.handleGetLikeBooks)
@@ -26,14 +25,6 @@ export default function (database) {
   router.post(
     "/readingLists",
     asyncErrorHandler(UsersController.handleGetReadingBooks)
-  );
-  router.get(
-    "/bookmark/:bookUUID",
-    asyncErrorHandler(UsersController.handleGetBookmark)
-  );
-  router.get(
-    "/bookStatus/:bookUUID",
-    asyncErrorHandler(UsersController.handleGetBookStatus)
   );
 
   return router;

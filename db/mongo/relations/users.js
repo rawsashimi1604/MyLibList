@@ -78,8 +78,18 @@ async function updateHashedUserPassword(user) {
       { $set: { password: user.password }}
     )
 
+    if (res.modifiedCount === 1) {
+      const dbUser = await db.collection("users").find(
+        { email: user.email }
+      ).toArray()
+
+      return {
+        rows: dbUser
+      }
+    }
+    
     return {
-      rows : res
+      rows : []
     }
 
   } catch (err) {
