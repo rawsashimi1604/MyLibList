@@ -9,7 +9,44 @@ async function getAllReadingList() {
     await client.connect();
 
     const db = client.db("defaultdb");
-    db.collection("reading_lists").find();
+    const res = await db.collection("reading_lists").find().toArray();
+
+    // $lookup:
+    //  {
+    //    from: <collection to join>,
+    //    localField: <field from the input documents>,
+    //    foreignField: <field from the documents of the "from" collection>,
+    //    as: <output array field>
+    //  }
+
+    const otherRes = await db.collection("reading_lists").aggregate([
+      {'$match': { _id : {$exists: true} } },
+      { $lookup : 
+        {
+          from: "users",
+          localField: "email.$id",
+          foreignField: "_id",
+          as: "email"
+        },
+      },
+      {
+        $unwind: "$email"
+      },
+      {
+        $project : { 
+          "email": "$email.email",
+          "name": 1,
+          "timestamp_created_on": 1
+        }
+      },
+    ]).toArray();
+    // Get the email from 
+
+    console.log(otherRes)
+    return {
+      rows: otherRes
+    }
+
   } catch (err) {
     console.log(err);
     throw err;
@@ -36,12 +73,12 @@ async function addReadingList(readingList) {
     const added = await db.collection("reading_lists").insertOne({
       name: readingList.name,
       timestamp_created_on: readingList.timestamp_created_on,
-      user: {
+      email: {
         "$ref" : "users",
         "$id": ObjectId(objectId._id)
       }
     });
-    
+
     const res = await db
       .collection("reading_lists")
       .find({ _id: added.insertedId })
