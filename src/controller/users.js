@@ -180,7 +180,7 @@ async function handleGetReadingBooks(req, res) {
 
   res.status(200).send({
     data: getUserReadingListsResult.rows,
-    message: `Successfully get all books users likes.`,
+    message: `Successfully get all reading lists books.`,
   });
   return;
 }

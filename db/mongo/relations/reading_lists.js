@@ -26,18 +26,22 @@ async function addReadingList(readingList) {
 
     // TODO Refactor into another function
 
-    const objectId = db
+    const objectId = await db
       .collection("users")
-      .find({ email: readingList.email })
-      .toArray();
+      .findOne({ email: readingList.email })
 
+    console.log(objectId);
+
+    
     const added = await db.collection("reading_lists").insertOne({
       name: readingList.name,
       timestamp_created_on: readingList.timestamp_created_on,
-      user: DBRef("users", ObjectId(objectId._id)),
+      user: {
+        "$ref" : "users",
+        "$id": ObjectId(objectId._id)
+      }
     });
-
-    console.log(added);
+    
     const res = await db
       .collection("reading_lists")
       .find({ _id: added.insertedId })

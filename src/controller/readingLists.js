@@ -62,13 +62,6 @@ async function handleAddReadingList(req, res) {
     name: req.body["name"],
   };
 
-  // GET POST PUT DELETE
-  // GET -> you dont send any body
-  // POST PUT DELETE -> you send body
-
-  // Check whether we received valid data!
-  // For example what if they did not give the email? then we cant proceed
-  // 400 IS CLIENT FUCKED UP...
   if (!validateAddReadingList(readingListData)) {
     res.status(400).send("Data received from client is not valid!");
     return;
@@ -104,7 +97,6 @@ async function handleAddReadingList(req, res) {
     return;
   }
 
-  //
   res.status(400).send({
     error: "Something went wrong when adding a reading list.",
   });
