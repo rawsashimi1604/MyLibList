@@ -11,14 +11,6 @@ async function getAllReadingList() {
     const db = client.db("defaultdb");
     const res = await db.collection("reading_lists").find().toArray();
 
-    // $lookup:
-    //  {
-    //    from: <collection to join>,
-    //    localField: <field from the input documents>,
-    //    foreignField: <field from the documents of the "from" collection>,
-    //    as: <output array field>
-    //  }
-
     const otherRes = await db.collection("reading_lists").aggregate([
       {'$match': { _id : {$exists: true} } },
       { $lookup : 
@@ -94,9 +86,22 @@ async function addReadingList(readingList) {
 }
 
 async function getReadingListByID(readingListID) {
+  const client = await mongoClient();
   try {
-    client.db().collection("reading_lists");
-    await client.find({ _id: ObjectId(readingListID) });
+    await client.close();
+    await client.connect();
+
+    const db = client.db("defaultdb");
+
+    const res = await db.collection("reading_lists").findOne(
+      { "_id": ObjectId(readingListID) }
+    );
+
+    console.log(res);
+    return {
+      rows: res
+    }
+    
   } catch (err) {
     console.log(err);
     throw err;

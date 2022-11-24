@@ -8,20 +8,24 @@ async function handleGetSpecificReadingList(req, res) {
   // Check whetehr client sent a request to a route with valid BIGSERIAL parameter
   const readingListID = req.params.readingListID;
 
-  // Not a valid condition ! we did not receive a positive number
-  if (!(validateNumberReceived && Number(readingListID) > 0)) {
-    res.status(400).send({
-      error: "Received invalid input from client",
-    });
-    return;
+  // Not a valid condition ! we did not receive a positive number (only for postgres)
+  const database = res.locals.database;
+  if (database.instance === "POSTGRES") {
+    if (!(validateNumberReceived && Number(readingListID) > 0)) {
+      res.status(400).send({
+        error: "Received invalid input from client",
+      });
+      return;
+    }
   }
 
   // Valid condition ! we received a positive number
   // Check the database for the reading list
-  const database = res.locals.database;
   const getReadingListByIDResult =
     await database.relations.reading_lists.getReadingListByID(readingListID);
 
+  console.log(getReadingListByIDResult)
+  
   const getBooksInReadingListResult =
     await database.relations.book_lists.getAllBooksFromReadingList(
       readingListID
