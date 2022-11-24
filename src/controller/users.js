@@ -25,9 +25,7 @@ async function handleRegisterUser(req, res) {
       user.email
     );
 
-    console.log("worked")
-
-    if (!checkUserExists.rows.length === 0) {
+    if (!(checkUserExists.rows.length === 0)) {
       res.status(400).send("Failed to register.");
       return;
     }
@@ -60,8 +58,6 @@ async function handleRegisterUser(req, res) {
 async function handleGetUserData(req, res) {
   const email = req.query.email;
 
-  console.log(email);
-
   if (!validateUser(email)) {
     res.status(400).send({
       error: "Invalid email input",
@@ -90,7 +86,6 @@ async function handleGetUserData(req, res) {
   });
   return;
 
-  res.send("User route...");
 }
 
 async function handleChangePassword(req, res) {
@@ -143,52 +138,6 @@ async function handleChangePassword(req, res) {
   return;
 }
 
-async function handleDeleteUser(req, res) {
-  // Receive JSON from frontend
-  const userData = {
-    email: req.body["email"],
-  };
-
-  // User object not validated! Wrong information passed
-  if (!validateDeleteUser(userData)) {
-    res.status(400).send("Invalid user object sent.");
-    return;
-  }
-
-  // Check whether the email received exists in the database...
-  const database = res.locals.database;
-  const checkUserExists = await database.relations.users.checkUserExists(
-    userData.email
-  );
-
-  // if email already exists, then you can delete user from db
-  if (!(checkUserExists.rows.length >= 1)) {
-    res
-      .status(400)
-      .send("Email does not exist on database! Can't delete user!!!");
-    return;
-  }
-
-  // Delete user from database
-  const updatePasswordResult = await database.relations.users.deleteUser(
-    userData.email
-  );
-
-  // If the database returned us 0 row, means it has succesfully deleted from the database...
-  if (updatePasswordResult.rows.length == 0) {
-    res.status(200).send({
-      message: "Successfully deleted user.",
-    });
-    return;
-  }
-
-  //
-  res.status(400).send({
-    error: "Something went wrong when deleting a user.",
-  });
-  return;
-}
-
 async function handleGetLikeBooks(req, res) {
   // Check the database for the reading list
   // Check if email was specified
@@ -200,6 +149,7 @@ async function handleGetLikeBooks(req, res) {
   }
 
   const database = res.locals.database;
+
   const getLikeBooksResult =
     await database.relations.books_users_likes.getAllBooksUsersLikes(
       req.body.email
@@ -235,83 +185,10 @@ async function handleGetReadingBooks(req, res) {
   return;
 }
 
-async function handleGetSpecificBookmark(req, res) {
-  // Check whetehr client sent a request to a route with valid BIGSERIAL parameter
-  const usersBoomarksID = req.params.usersBoomarksID;
-
-  // Not a valid condition ! we did not receive a positive number
-  if (!Text(usersBoomarksID)) {
-    res.status(400).send({
-      error: "Received invalid input from client",
-    });
-    return;
-  }
-
-  // Valid condition ! we received a positive number
-  // Check the database for the reading list
-  const database = res.locals.database;
-  const getUsersBookmarksByIDResult =
-    await database.relations.users_bookmarks.getUsersBookmarksByID(
-      usersBoomarksID
-    );
-
-  if (getUsersBookmarksByIDResult.rows.length >= 1) {
-    res.status(200).send({
-      users_bookmarks: getUsersBookmarksByIDResult.rows[0],
-      message: `Successfully get users bookmarks using ID: ${usersBoomarksID}.`,
-    });
-    return;
-  }
-
-  // if no readinglist was found send a 400 error
-  res.status(400).send({
-    error: `Could not find users bookmarks using ID: ${usersBoomarksID}.`,
-  });
-  return;
-}
-
-async function handleGetBookStatus(req, res) {
-  // Check whetehr client sent a request to a route with valid BIGSERIAL parameter
-  const bookUserStatusID = req.params.bookUserStatusID;
-
-  // Not a valid condition ! we did not receive a positive number
-  if (!Text(bookUserStatusID)) {
-    res.status(400).send({
-      error: "Received invalid input from client",
-    });
-    return;
-  }
-
-  // Valid condition ! we received a positive number
-  // Check the database for the reading list
-  const database = res.locals.database;
-  const getBookUserStatusByIDResult =
-    await database.relations.books_users_status.getBookUserStatusByID(
-      bookUserStatusID
-    );
-
-  if (getBookUserStatusByIDResult.rows.length >= 1) {
-    res.status(200).send({
-      book_users_status: getBookUserStatusByIDResult.rows[0],
-      message: `Successfully get book users status using ID: ${bookUserStatusID}.`,
-    });
-    return;
-  }
-
-  // if no readinglist was found send a 400 error
-  res.status(400).send({
-    error: `Could not find book users status using ID: ${bookUserStatusID}.`,
-  });
-  return;
-}
-
 export default {
   handleRegisterUser,
   handleGetUserData,
   handleChangePassword,
-  handleDeleteUser,
   handleGetLikeBooks,
-  handleGetSpecificBookmark,
-  handleGetBookStatus,
   handleGetReadingBooks,
 };
