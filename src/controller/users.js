@@ -153,12 +153,19 @@ async function handleGetLikeBooks(req, res) {
   }
 
   const database = res.locals.database;
-
-  const getLikeBooksResult =
-    await database.relations.books_users_likes.getAllBooksUsersLikes(
+  let getLikeBooksResult;
+  if (database.instance === "POSTGRES"){
+    getLikeBooksResult = await database.relations.books_users_likes.getAllBooksUsersLikes(
       req.body.email
     );
-  console.log(getLikeBooksResult);
+  }else if (database.instance === "MONGO"){
+    getLikeBooksResult = await database.relations.users.getAllBooksUsersLikes(
+      req.body.email
+    );
+  }
+
+
+
 
   res.status(200).send({
     data: getLikeBooksResult.rows,

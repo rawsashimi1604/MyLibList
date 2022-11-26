@@ -66,6 +66,29 @@ async function getUserByEmail(email) {
   }
 }
 
+async function getAllBooksUsersLikes(email){
+  const client = await mongoClient();
+
+  try {
+    await client.close();
+    await client.connect();
+    const db = client.db("defaultdb");
+
+    const getUser = await db.collection("users").findOne(
+      { email : email }
+    );
+
+   const getBooks = await db.collection("users").aggregate([
+    
+   ])
+   
+
+  } catch (err) {
+    console.log(err)
+    throw err;
+  }
+}
+
 async function updateHashedUserPassword(user) {
   const client = await mongoClient();
 
@@ -103,5 +126,6 @@ export default {
   checkUserExists,
   addUser,
   getUserByEmail,
-  updateHashedUserPassword
+  updateHashedUserPassword,
+  getAllBooksUsersLikes
 }
