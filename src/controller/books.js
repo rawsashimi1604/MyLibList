@@ -115,7 +115,6 @@ async function handleAddLike(req, res) {
       )
     }
     
-
     if (deleteLike.rows.length >= 1) {
       res.status(200).send({
         email: `${likeBookData.email}`,
@@ -126,14 +125,17 @@ async function handleAddLike(req, res) {
     }
   }
   likeBookData["timestamp_liked"] = getCurrentTimestamp();
-
+  
   let addBookLikeResult;
   if (database.instance === "POSTGRES") {
+    console.log("postgres instance")
     addBookLikeResult = await database.relations.books_users_likes.addBookUsersLikes(likeBookData);
   } else if (database.instance === "MONGO") {
     addBookLikeResult = await database.relations.books.addLikeToBook(likeBookData.book_uuid, likeBookData.email)
   }
   
+  console.log(addBookLikeResult)
+
   if (addBookLikeResult.rows.length >= 1) {
     res.status(200).send({
       email: `${likeBookData.email}`,

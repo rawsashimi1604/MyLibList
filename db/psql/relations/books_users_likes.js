@@ -21,7 +21,7 @@ function addBookUsersLikes(book) {
       email,
       book_uuid,
       timestamp_liked
-    ) VALUES ($1, $2, $3)`;
+    ) VALUES ($1, $2, $3) RETURNING *`;
 
     const params = [book.email, book.book_uuid, book.timestamp_liked];
 

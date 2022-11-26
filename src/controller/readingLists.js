@@ -26,16 +26,23 @@ async function handleGetSpecificReadingList(req, res) {
     await database.relations.reading_lists.getReadingListByID(readingListID);
 
   console.log(getReadingListByIDResult)
-  
+
   const getBooksInReadingListResult =
     await database.relations.book_lists.getAllBooksFromReadingList(
       readingListID
     );
 
-  res.status(200).send({
-    reading_list: getReadingListByIDResult.rows[0],
-    books: getBooksInReadingListResult.rows,
-    message: `Successfully get reading list using ID: ${readingListID}.`,
+  if (getReadingListByIDResult.rows.length == 1) {
+    res.status(200).send({
+      reading_list: getReadingListByIDResult.rows[0],
+      books: getBooksInReadingListResult.rows,
+      message: `Successfully got reading list using ID: ${readingListID}.`,
+    });
+    return;
+  }
+
+  res.status(400).send({
+    error: "Reading list does not exist.",
   });
   return;
 }
@@ -147,7 +154,7 @@ async function handleDeleteReadingList(req, res) {
       .send("Email does not exist on database! Can't delete reading list!");
     return;
   }
-  
+
   // to check if email is tied to reading list that's about to be deleted
   const checkIsOwner =
     await database.relations.reading_lists.getReadingListByID(

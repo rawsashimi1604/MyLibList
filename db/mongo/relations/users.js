@@ -13,11 +13,10 @@ async function checkUserExists(email) {
     const res = await db.collection("users").find({ email: email }).toArray();
 
     return {
-      rows: res
+      rows: res,
     };
-
   } catch (err) {
-    console.log(err)
+    console.log(err);
     throw err;
   }
 }
@@ -31,17 +30,19 @@ async function addUser(user) {
     const db = client.db("defaultdb");
 
     // Add likes array to user when creating
-    user["likes"] = []
+    user["likes"] = [];
     await db.collection("users").insertOne(user);
 
-    const res = await db.collection("users").find({ email: user.email }).toArray();
+    const res = await db
+      .collection("users")
+      .find({ email: user.email })
+      .toArray();
 
     return {
-      rows : res
-    }
-
+      rows: res,
+    };
   } catch (err) {
-    console.log(err)
+    console.log(err);
     throw err;
   }
 }
@@ -57,16 +58,15 @@ async function getUserByEmail(email) {
     const res = await db.collection("users").find({ email: email }).toArray();
 
     return {
-      rows : res
-    }
-
+      rows: res,
+    };
   } catch (err) {
-    console.log(err)
+    console.log(err);
     throw err;
   }
 }
 
-async function getAllBooksUsersLikes(email){
+async function getAllBooksUsersLikes(email) {
   const client = await mongoClient();
 
   try {
@@ -74,17 +74,36 @@ async function getAllBooksUsersLikes(email){
     await client.connect();
     const db = client.db("defaultdb");
 
-    const getUser = await db.collection("users").findOne(
-      { email : email }
-    );
+    const getBooks = await db
+      .collection("users")
+      .aggregate([
+        { $match: { email: email } },
+        {
+          $lookup: {
+            from: "books",
+            localField: "likes.$id",
+            foreignField: "_id",
+            as: "likes",
+          },
+        },
+        {
+          $unwind: "$likes",
+        },
+        {
+          $project: {
+            book_uuid: "$likes.book_uuid",
+            title: "$likes.title",
+            date_created: "$likes.date_created",
+          },
+        },
+      ])
+      .toArray();
 
-   const getBooks = await db.collection("users").aggregate([
-    {}
-   ])
-   
-
+    return {
+      rows: getBooks,
+    };
   } catch (err) {
-    console.log(err)
+    console.log(err);
     throw err;
   }
 }
@@ -97,27 +116,45 @@ async function updateHashedUserPassword(user) {
     await client.connect();
     const db = client.db("defaultdb");
 
-    const res = await db.collection("users").updateOne(
-      { email: user.email },
-      { $set: { password: user.password }}
-    )
+    const res = await db
+      .collection("users")
+      .updateOne({ email: user.email }, { $set: { password: user.password } });
 
     if (res.modifiedCount === 1) {
-      const dbUser = await db.collection("users").find(
-        { email: user.email }
-      ).toArray()
+      const dbUser = await db
+        .collection("users")
+        .find({ email: user.email })
+        .toArray();
 
       return {
-        rows: dbUser
-      }
-    }
-    
-    return {
-      rows : []
+        rows: dbUser,
+      };
     }
 
+    return {
+      rows: [],
+    };
   } catch (err) {
-    console.log(err)
+    console.log(err);
+    throw err;
+  }
+}
+
+async function getHashedUserPassword(user) {
+  const client = await mongoClient();
+
+  try {
+    await client.close();
+    await client.connect();
+    const db = client.db("defaultdb");
+
+    const res = await db.collection("users").findOne({ email: user.email });
+
+    return {
+      rows: [{ password: res.password }],
+    };
+  } catch (err) {
+    console.log(err);
     throw err;
   }
 }
@@ -127,5 +164,6 @@ export default {
   addUser,
   getUserByEmail,
   updateHashedUserPassword,
-  getAllBooksUsersLikes
-}
+  getHashedUserPassword,
+  getAllBooksUsersLikes,
+};

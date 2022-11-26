@@ -11,8 +11,9 @@ async function getAllReadingList() {
     const db = client.db("defaultdb");
 
     const otherRes = await db.collection("reading_lists").aggregate([
-      {'$match': { _id : {$exists: true} } },
-      { $lookup : 
+      { '$match': { _id: { $exists: true } } },
+      {
+        $lookup:
         {
           from: "users",
           localField: "email.$id",
@@ -24,7 +25,7 @@ async function getAllReadingList() {
         $unwind: "$email"
       },
       {
-        $project : { 
+        $project: {
           "email": "$email.email",
           "name": 1,
           "timestamp_created_on": 1
@@ -60,12 +61,12 @@ async function addReadingList(readingList) {
 
     console.log(objectId);
 
-    
+
     const added = await db.collection("reading_lists").insertOne({
       name: readingList.name,
       timestamp_created_on: readingList.timestamp_created_on,
       email: {
-        "$ref" : "users",
+        "$ref": "users",
         "$id": ObjectId(objectId._id)
       }
     });
@@ -92,13 +93,10 @@ async function getReadingListByID(readingListID) {
 
     const db = client.db("defaultdb");
 
-    // const res = await db.collection("reading_lists").findOne(
-    //   { "_id": ObjectId(readingListID) }
-    // );
-
     const res = await db.collection("reading_lists").aggregate([
-      {'$match': { _id : ObjectId(readingListID) } },
-      { $lookup : 
+      { '$match': { _id: ObjectId(readingListID) } },
+      {
+        $lookup:
         {
           from: "users",
           localField: "email.$id",
@@ -110,7 +108,7 @@ async function getReadingListByID(readingListID) {
         $unwind: "$email"
       },
       {
-        $project : { 
+        $project: {
           "email": "$email.email",
           "name": 1,
           "timestamp_created_on": 1
@@ -121,7 +119,7 @@ async function getReadingListByID(readingListID) {
     return {
       rows: res
     }
-    
+
   } catch (err) {
     console.log(err);
     throw err;
@@ -191,9 +189,9 @@ async function deleteReadingListByID(reading_list_id) {
     await client.connect();
 
     const db = client.db("defaultdb");
-    
+
     const res = await db.collection("reading_lists").deleteOne(
-      { _id : ObjectId(reading_list_id) }
+      { _id: ObjectId(reading_list_id) }
     );
 
     if (res.deletedCount >= 1) {
@@ -201,7 +199,7 @@ async function deleteReadingListByID(reading_list_id) {
         rows: [res]
       }
     }
-    
+
   } catch (err) {
     console.log(err);
     throw err;
