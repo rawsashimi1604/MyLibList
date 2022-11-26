@@ -5,9 +5,11 @@ import databases from "../db/index.js";
 // Set up dotenv environment from .env file.
 setupEnv("../../.env");
 
-// Create PostgreSQL database object (current database object in use)
-// const database = databases.PSQLDatabase;
-const database = databases.MongoDatabase;
+// Create database object (current database object in use)
+let database;
+process.env.DATABASE === "MONGO" ?
+  database = databases.MongoDatabase :
+  database = databases.PSQLDatabase
 
 // Inject database into express.js app... (Dependency Injection)
 const app = makeApp(database);
