@@ -1,4 +1,6 @@
 import { mongoClient } from "../config.js";
+import { DBRef } from "mongodb";
+import { ObjectId } from "mongodb";
 
 // TODO ADD FUNCTIONS TO QUERY DATABASE
 async function getTopBooksByLikes(number_of_books) {
@@ -49,6 +51,31 @@ async function checkBookExists(book_uuid) {
   }
 }
 
+async function checkIfBookIsLiked(email, book_uuid){
+  const client = await mongoClient();
+  try {
+    await client.close();
+    await client.connect();
+
+    const db = client.db("defaultdb");
+    
+    const getBook = await db.collection("books").findOne(
+      { book_uuid : book_uuid }
+    )
+
+    const getUser = await db.collection("users").findOne(
+      { email : email }
+    )
+
+    console.log(getBook.likes);
+    console.log(getUser.likes);
+
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
 async function addLikeToBook(book_uuid, email) {
   const client = await mongoClient();
   try {
@@ -62,10 +89,18 @@ async function addLikeToBook(book_uuid, email) {
       { book_uuid: book_uuid },
       { $inc: { likes: 1 }}
     );
+    const findBook = await db.collection("books").findOne(
+      { book_uuid: book_uuid }
+    );
 
-    // Update the user...
+    const getUser = await db.collection("users").findOne(
+      { email: email }
+    );
+
+   // Update the user...
     const updateUser = db.collection("users").updateOne(
       { email: email },
+      { $push: {likes: {"$ref" : "books", "$id" : ObjectId(findBook._id)  }}}
        
     )
 
@@ -84,5 +119,6 @@ async function addLikeToBook(book_uuid, email) {
 export default {
   getTopBooksByLikes,
   checkBookExists,
-  addLikeToBook
+  addLikeToBook,
+  checkIfBookIsLiked
 };

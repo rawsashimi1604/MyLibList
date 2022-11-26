@@ -118,29 +118,38 @@ async function handleAddLike(req, res) {
     return;
   }
 
-  // IF book is liked, delete
-  // const checkIfBookIsLiked =
-  //   await database.relations.books_users_likes.checkIfBookIsLiked(
-  //     likeBookData.email,
-  //     likeBookData.book_uuid
-  //   );
+  //IF book is liked, delete
+  let checkIfBookIsLiked;
 
-  // if (checkIfBookIsLiked.rows.length >= 1) {
-  //   const deleteLike =
-  //     await database.relations.books_users_likes.deleteBookUsersLike(
-  //       likeBookData.email,
-  //       likeBookData.book_uuid
-  //     );
+  if(database.instance === "POSTGRES"){
+    checkIfBookIsLiked = await database.relations.books_users_likes.checkIfBookIsLiked(
+      likeBookData.email,
+      likeBookData.book_uuid
+    );
+  }else if(database.instance === "MONGO"){
+    checkIfBookIsLiked = await database.relations.books.checkIfBookIsLiked(
+      likeBookData.email,
+      likeBookData.book_uuid
+    );
+  }
+  
 
-  //   if (deleteLike.rows.length >= 1) {
-  //     res.status(200).send({
-  //       email: `${likeBookData.email}`,
-  //       book_uuid: `${likeBookData.book_uuid}`,
-  //       message: "Successfully unliked book.",
-  //     });
-  //     return;
-  //   }
-  // }
+  if (checkIfBookIsLiked.rows.length >= 1) {
+    const deleteLike =
+      await database.relations.books_users_likes.deleteBookUsersLike(
+        likeBookData.email,
+        likeBookData.book_uuid
+      );
+
+    if (deleteLike.rows.length >= 1) {
+      res.status(200).send({
+        email: `${likeBookData.email}`,
+        book_uuid: `${likeBookData.book_uuid}`,
+        message: "Successfully unliked book.",
+      });
+      return;
+    }
+  }
   likeBookData["timestamp_liked"] = getCurrentTimestamp();
 
   let addBookLikeResult;
