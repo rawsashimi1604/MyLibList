@@ -13,7 +13,6 @@ async function handleUserLogin(req, res) {
   // User object was validated! Correct info was passed..
   if (validateUserLogin(user)) {
     const database = res.locals.database;
-    const result = await database.relations.users.getHashedUserPassword(user);
 
     // If user does not exist return 400
     const checkUserExists = await database.relations.users.checkUserExists(
@@ -21,6 +20,8 @@ async function handleUserLogin(req, res) {
     );
     if (checkUserExists.rows.length === 0)
       return res.status(400).send("Invalid email.");
+
+    const result = await database.relations.users.getHashedUserPassword(user);
 
     // Password queried from DB
     const hashedPassword = result.rows[0].password;
@@ -83,7 +84,9 @@ async function handleUserLogout(req, res) {
 
   // No token received from client
   if (!refreshToken) {
-    return res.sendStatus(400);
+    return res.status(400).send({
+      error: "No token received from client"
+    });
   }
 
   // Check if token exists
@@ -92,7 +95,9 @@ async function handleUserLogout(req, res) {
 
   // No token exists, user is not logged in
   if (checkRefreshTokenExists.rows.length === 0) {
-    return res.sendStatus(400);
+    return res.status(400).send({
+      error: "No token exists, user is not logged in"
+    });
   }
 
   // Remove token from database
@@ -100,7 +105,10 @@ async function handleUserLogout(req, res) {
     refreshToken
   );
 
-  res.sendStatus(200);
+  res.status(200).send({
+    message: "Logout success",
+    data: deleteTokenResult.rows[0]
+  });
 }
 
 // POST /api/auth/token
