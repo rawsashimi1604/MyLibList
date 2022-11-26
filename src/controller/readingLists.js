@@ -31,8 +31,8 @@ async function handleGetSpecificReadingList(req, res) {
 
   if (database.instance === "POSTGRES") {
     getBooksInReadingListResult = await database.relations.book_lists.getAllBooksFromReadingList(
-        readingListID
-      );
+      readingListID
+    );
   } else if (database.instance === "MONGO") {
     getBooksInReadingListResult = await database.relations.reading_lists.getAllBooksFromReadingList(
       readingListID
@@ -255,26 +255,19 @@ async function handleAddBookToReadingList(req, res) {
     return;
   }
 
- // check if book is already in reading list
-  // let checkBookExistsInReadingList;
-  // if(database.instance === "POSTGRES"){
-  //   checkBookExistsInReadingList = await database.relations.book_lists.checkBookInReadingListExists(
-  //     bookToReadingListData
-  //   );
-  // }else if(database.instance === "MONGO"){
-  //   checkBookExistsInReadingList = await database.relations.reading_lists.checkBookInReadingListExists(
-  //     bookToReadingListData
-  //   )
-  // }
-
-  // if (checkBookExistsInReadingList.rows.length >= 1) {
-  //   res
-  //     .status(400)
-  //     .send(
-  //       "Book already exists in this reading list! Can't add book again to reading list!"
-  //     );
-  //   return;
-  // }
+  // check if book is already in reading list
+  const checkBookExistsInReadingList =
+    await database.relations.book_lists.checkBookInReadingListExists(
+      bookToReadingListData
+    );
+  if (checkBookExistsInReadingList.rows.length >= 1) {
+    res
+      .status(400)
+      .send(
+        "Book already exists in this reading list! Can't add book again to reading list!"
+      );
+    return;
+  }
 
   // since there should only be one id that is to be added,
   if (!(checkIsOwner.rows[0]["email"] === bookToReadingListData.email)) {
@@ -288,15 +281,9 @@ async function handleAddBookToReadingList(req, res) {
   bookToReadingListData["timestamp_created_on"] = getCurrentTimestamp();
 
   // Add book to reading list in database
-  let addBookToReadingListResult;
-  if(database.instance === "POSTGRES"){
-    addBookToReadingListResult = await database.relations.book_lists.addBookList(bookToReadingListData);
-  }else if(database.instance === "MONGO"){
-    bookToReadingListData["_id"] = bookToReadingListData.reading_list_id;
-    console.log(bookToReadingListData);
-    addBookToReadingListResult = await database.relations.reading_lists.addBookList(bookToReadingListData);
-  }
-
+  const addBookToReadingListResult =
+    await database.relations.book_lists.addBookList(bookToReadingListData);
+  console.log(addBookToReadingListResult);
   // If the database returned us 1 row, means it has succesfully added to the database...
   if (addBookToReadingListResult.rows.length >= 1) {
     res.status(200).send({
@@ -372,17 +359,10 @@ async function handleDeleteBookFromReadingList(req, res) {
   }
 
   // check if book is already in reading list
-  let checkBookExistsInReadingList;
-  if(database.instance === "POSTGRES"){
-    checkBookExistsInReadingList = await database.relations.book_lists.checkBookInReadingListExists(
+  const checkBookExistsInReadingList =
+    await database.relations.book_lists.checkBookInReadingListExists(
       bookFromReadingListData
     );
-  }else if(database.instance === "MONGO"){
-    checkBookExistsInReadingList = await database.relations.reading_lists.checkBookInReadingListExists(
-      bookFromReadingListData
-    )
-  }
-
   if (!(checkBookExistsInReadingList.rows.length >= 1)) {
     res
       .status(400)
