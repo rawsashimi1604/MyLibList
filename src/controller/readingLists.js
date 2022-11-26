@@ -164,9 +164,6 @@ async function handleDeleteReadingList(req, res) {
     return;
   }
 
-  console.log(checkIsOwner);
-  console.log(readingListData);
-
   // check if readinglist to be deleted belongs to owner
   if (!(checkIsOwner.rows[0]["email"] === readingListData.email)) {
     res.status(400).send("You can't delete a reading list that you don't own.");
@@ -188,7 +185,7 @@ async function handleDeleteReadingList(req, res) {
   }
 }
 
-// POST /api/readingList/book
+// POST /api/readingList/book (TODO)
 async function handleAddBookToReadingList(req, res) {
   const bookToReadingListData = {
     reading_list_id: req.body["reading_list_id"],

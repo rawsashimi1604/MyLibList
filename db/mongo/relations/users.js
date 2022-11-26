@@ -30,7 +30,8 @@ async function addUser(user) {
     await client.connect();
     const db = client.db("defaultdb");
 
-    console.log("add user")
+    // Add likes array to user when creating
+    user["likes"] = []
     await db.collection("users").insertOne(user);
 
     const res = await db.collection("users").find({ email: user.email }).toArray();

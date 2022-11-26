@@ -40,7 +40,7 @@ function getBooksFormatted() {
       collections: book.collections,
       alternative_title: book.alternative_title,
       contributors: book.contributors[0],
-      likes: book.likes,
+      likes: 0,
     };
     booksExampleCache.push(booksExample);
   }

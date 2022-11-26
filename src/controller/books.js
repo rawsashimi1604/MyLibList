@@ -118,34 +118,39 @@ async function handleAddLike(req, res) {
     return;
   }
 
-  const checkIfBookIsLiked =
-    await database.relations.books_users_likes.checkIfBookIsLiked(
-      likeBookData.email,
-      likeBookData.book_uuid
-    );
+  // IF book is liked, delete
+  // const checkIfBookIsLiked =
+  //   await database.relations.books_users_likes.checkIfBookIsLiked(
+  //     likeBookData.email,
+  //     likeBookData.book_uuid
+  //   );
 
-  if (checkIfBookIsLiked.rows.length >= 1) {
-    const deleteLike =
-      await database.relations.books_users_likes.deleteBookUsersLike(
-        likeBookData.email,
-        likeBookData.book_uuid
-      );
+  // if (checkIfBookIsLiked.rows.length >= 1) {
+  //   const deleteLike =
+  //     await database.relations.books_users_likes.deleteBookUsersLike(
+  //       likeBookData.email,
+  //       likeBookData.book_uuid
+  //     );
 
-    if (deleteLike.rowCount >= 1) {
-      res.status(200).send({
-        email: `${likeBookData.email}`,
-        book_uuid: `${likeBookData.book_uuid}`,
-        message: "Successfully unliked book.",
-      });
-      return;
-    }
-  }
+  //   if (deleteLike.rows.length >= 1) {
+  //     res.status(200).send({
+  //       email: `${likeBookData.email}`,
+  //       book_uuid: `${likeBookData.book_uuid}`,
+  //       message: "Successfully unliked book.",
+  //     });
+  //     return;
+  //   }
+  // }
   likeBookData["timestamp_liked"] = getCurrentTimestamp();
 
-  const addBookLikeResult =
-    await database.relations.books_users_likes.addBookUsersLikes(likeBookData);
-
-  if (addBookLikeResult.rowCount >= 1) {
+  let addBookLikeResult;
+  if (database.instance === "POSTGRES") {
+    addBookLikeResult = await database.relations.books_users_likes.addBookUsersLikes(likeBookData);
+  } else if (database.instance === "MONGO") {
+    addBookLikeResult = await database.relations.books.addLikeToBook(likeBookData.book_uuid, likeBookData.email)
+  }
+  
+  if (addBookLikeResult.rows.length >= 1) {
     res.status(200).send({
       email: `${likeBookData.email}`,
       book_uuid: `${likeBookData.book_uuid}`,
@@ -160,18 +165,21 @@ async function handleAddLike(req, res) {
   return;
 }
 
-// GET /api/book/topBooks
+// GET /api/book/topBooks (DONE)
 async function handleGetTopBooks(req, res) {
   // Get top 50 books by likes
   const database = res.locals.database;
   const topBooksResult = await database.relations.books.getTopBooksByLikes(20);
 
-  for (const book of topBooksResult.rows) {
-    const likesData =
-      await database.relations.books_users_likes.getNumberOfLikes(
-        book.book_uuid
-      );
-    book["likes"] = likesData.rows[0].count;
+  // ONLY FOR POSTGRES
+  if (database.instance === "POSTGRES") {
+    for (const book of topBooksResult.rows) {
+      const likesData =
+        await database.relations.books_users_likes.getNumberOfLikes(
+          book.book_uuid
+        );
+      book["likes"] = likesData.rows[0].count;
+    }
   }
 
   res.status(200).send({
