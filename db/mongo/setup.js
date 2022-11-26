@@ -23,7 +23,7 @@ async function setupMongo() {
     if (!"books" in Object.values(collections))
       await db.createCollection("books");
     if (!"refresh_token" in Object.values(collections))
-      await db.createCollection("usrefresh_tokeners");
+      await db.createCollection("refresh_token");
   } catch (e) {
     console.log(e);
   } finally {

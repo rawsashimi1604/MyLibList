@@ -122,10 +122,34 @@ async function updateHashedUserPassword(user) {
   }
 }
 
+async function getHashedUserPassword(user) {
+  const client = await mongoClient();
+
+  try {
+    await client.close();
+    await client.connect();
+    const db = client.db("defaultdb");
+
+    const res = await db.collection("users").findOne(
+      { email: user.email },
+    )
+    
+    return {
+      rows: [{ password: res.password }]
+    }
+    
+
+  } catch (err) {
+    console.log(err)
+    throw err;
+  }
+}
+
 export default {
   checkUserExists,
   addUser,
   getUserByEmail,
   updateHashedUserPassword,
+  getHashedUserPassword,
   getAllBooksUsersLikes
 }
