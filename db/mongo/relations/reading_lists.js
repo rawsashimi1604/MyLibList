@@ -28,7 +28,8 @@ async function getAllReadingList() {
         $project: {
           "email": "$email.email",
           "name": 1,
-          "timestamp_created_on": 1
+          "timestamp_created_on": 1,
+          "reading_list_id": 1
         }
       },
     ]).toArray();
@@ -68,9 +69,15 @@ async function addReadingList(readingList) {
       email: {
         "$ref": "users",
         "$id": ObjectId(objectId._id)
-      }
+      },
+      books: [],
+      reading_list_id: ""
     });
 
+    const updateReadingListID = await db.collection("reading_lists").updateOne(
+      { _id: added.insertedId },
+      { $set:{ reading_list_id: added.insertedId} }
+    )
     const res = await db
       .collection("reading_lists")
       .find({ _id: added.insertedId })
@@ -137,14 +144,30 @@ async function checkBookInReadingListExists(data){
     const getBook = await db.collection("books").findOne(
       { book_uuid: data.book_uuid }
     )
-
-    const getUser = await db.collection("users").findOne(
-      { email : email }
+    const getReadingList = await db.collection("reading_lists").findOne(
+      { _id: ObjectId(data.reading_list_id) }
     )
-
-    let bookExist = false;
-
     
+    console.log(getReadingList)
+    let bookExist = false;
+    for (const ref of getReadingList.books){
+      const id = ref.toJSON().$id;
+      if(id.toString() === getBook._id.toString()){
+        bookExist = true;
+        break;
+      }
+    }
+
+    if (bookExist){
+      return{
+        rows: [getReadingList]
+      }
+    }
+
+    return{
+      rows: []
+    }
+
   } catch (err) {
     console.log(err);
     throw err;

@@ -248,26 +248,26 @@ async function handleAddBookToReadingList(req, res) {
     return;
   }
 
- // check if book is already in reading list
-  // let checkBookExistsInReadingList;
-  // if(database.instance === "POSTGRES"){
-  //   checkBookExistsInReadingList = await database.relations.book_lists.checkBookInReadingListExists(
-  //     bookToReadingListData
-  //   );
-  // }else if(database.instance === "MONGO"){
-  //   checkBookExistsInReadingList = await database.relations.reading_lists.checkBookInReadingListExists(
-  //     bookToReadingListData
-  //   )
-  // }
+ //check if book is already in reading list
+  let checkBookExistsInReadingList;
+  if(database.instance === "POSTGRES"){
+    checkBookExistsInReadingList = await database.relations.book_lists.checkBookInReadingListExists(
+      bookToReadingListData
+    );
+  }else if(database.instance === "MONGO"){
+    checkBookExistsInReadingList = await database.relations.reading_lists.checkBookInReadingListExists(
+      bookToReadingListData
+    )
+  }
 
-  // if (checkBookExistsInReadingList.rows.length >= 1) {
-  //   res
-  //     .status(400)
-  //     .send(
-  //       "Book already exists in this reading list! Can't add book again to reading list!"
-  //     );
-  //   return;
-  // }
+  if (checkBookExistsInReadingList.rows.length >= 1) {
+    res
+      .status(400)
+      .send(
+        "Book already exists in this reading list! Can't add book again to reading list!"
+      );
+    return;
+  }
 
   // since there should only be one id that is to be added,
   if (!(checkIsOwner.rows[0]["email"] === bookToReadingListData.email)) {
