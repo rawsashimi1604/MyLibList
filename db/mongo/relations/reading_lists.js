@@ -161,10 +161,52 @@ async function getAllReadingListsByEmail(email) {
   }
 }
 
+async function getAllBooksFromReadingList(readingListID) {
+  const client = await mongoClient();
+  try {
+    await client.close();
+    await client.connect();
+
+    const db = client.db("defaultdb");
+
+    const res = await db.collection("reading_lists").aggregate([
+      { '$match': { _id: ObjectId(readingListID) } },
+      {
+        $lookup:
+        {
+          from: "users",
+          localField: "email.$id",
+          foreignField: "_id",
+          as: "email"
+        },
+      },
+      {
+        $unwind: "$email"
+      },
+      {
+        $project: {
+          "email": "$email.email",
+          "name": 1,
+          "timestamp_created_on": 1
+        }
+      },
+    ]).toArray();
+
+    return {
+      rows: res
+    }
+
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
 export default {
   getAllReadingList,
   addReadingList,
   getReadingListByID,
   deleteReadingListByID,
   getAllReadingListsByEmail,
+  getAllBooksFromReadingList,
 };
