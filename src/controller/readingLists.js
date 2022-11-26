@@ -27,10 +27,17 @@ async function handleGetSpecificReadingList(req, res) {
 
   console.log(getReadingListByIDResult)
 
-  const getBooksInReadingListResult =
-    await database.relations.book_lists.getAllBooksFromReadingList(
+  let getBooksInReadingListResult
+
+  if (database.instance === "POSTGRES") {
+    getBooksInReadingListResult = await database.relations.book_lists.getAllBooksFromReadingList(
+        readingListID
+      );
+  } else if (database.instance === "MONGO") {
+    getBooksInReadingListResult = await database.relations.reading_lists.getAllBooksFromReadingList(
       readingListID
     );
+  }
 
   if (getReadingListByIDResult.rows.length == 1) {
     res.status(200).send({
