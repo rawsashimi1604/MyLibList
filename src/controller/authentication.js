@@ -3,10 +3,7 @@ import validateUserLogin from "../lib/authentication/validateUserLogin.js";
 import generateAccessToken from "../lib/authentication/generateAccessToken.js";
 import bcrypt from "bcrypt";
 
-function handleIndex(req, res) {
-  res.send("handle auth index");
-}
-
+// POST /api/auth/login
 async function handleUserLogin(req, res) {
   const user = {
     email: req.body["email"],
@@ -75,6 +72,7 @@ async function handleUserLogin(req, res) {
   }
 }
 
+// DELETE /api/auth/logout
 async function handleUserLogout(req, res) {
   // Log out user
   // Remove refresh token from database
@@ -105,6 +103,7 @@ async function handleUserLogout(req, res) {
   res.sendStatus(200);
 }
 
+// POST /api/auth/token
 async function handleNewToken(req, res) {
   // Gets refresh token from client
   // Check if refresh token is valid (exists in database)
@@ -144,7 +143,6 @@ async function handleNewToken(req, res) {
 }
 
 export default {
-  handleIndex,
   handleUserLogin,
   handleUserLogout,
   handleNewToken,

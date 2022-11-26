@@ -4,6 +4,7 @@ import validateLikeBook from "../lib/books/validateLikeBook.js";
 import validateBookStatus from "../lib/books/validateBookStatus.js";
 import getCurrentTimestamp from "../lib/utils/getCurrentTimestamp.js";
 
+// GET /api/book
 async function handleIndex(req, res) {
   // Check which query param was passed in...
   const database = res.locals.database;
@@ -55,6 +56,7 @@ async function handleIndex(req, res) {
   });
 }
 
+// DELETE /api/book
 async function handleDeleteBook(req, res) {
   const bookUUID = req.body.book_uuid;
 
@@ -86,80 +88,7 @@ async function handleDeleteBook(req, res) {
   }
 }
 
-async function handleUpdateBookmark(req, res) {
-  const updateBookmarkData = {
-    email: req.body["email"],
-    book_uuid: req.body["book_uuid"],
-    page: req.body["page"],
-  };
-
-  if (!validateBookmark(updateBookmarkData)) {
-    res.status(400).send("Data received from client it not valid!");
-    return;
-  }
-
-  const database = res.locals.database;
-  const checkUserExists = await database.relations.users.checkUserExists(
-    updateBookmarkData.email
-  );
-
-  if (!(checkUserExists.rows.length >= 1)) {
-    res.status(400).send("Email does not exist on database!");
-    return;
-  }
-
-  const checkBookExists = await database.relations.books.checkBookExists(
-    updateBookmarkData.book_uuid
-  );
-
-  if (!(checkBookExists.rows.length >= 1)) {
-    res.status(400).send("Book does not exist on database!");
-  }
-
-  updateBookmarkData["timestamp_bookmarked"] = getCurrentTimestamp();
-
-  const checkIfBookmarkAdded =
-    await database.relations.users_bookmarks.checkIfBookmarkAdded(
-      updateBookmarkData.email,
-      updateBookmarkData.book_uuid
-    );
-
-  if (checkIfBookmarkAdded.rows.length >= 1) {
-    const updateBookmarkResult =
-      await database.relations.users_bookmarks.updateBookmark(
-        updateBookmarkData.page,
-        updateBookmarkData.timestamp_bookmarked,
-        updateBookmarkData.email,
-        updateBookmarkData.book_uuid
-      );
-
-    if (updateBookmarkResult.rowCount >= 1) {
-      res.status(200).send({
-        data: updateBookmarkData,
-        message: "Successfully updated bookmark page",
-      });
-    }
-  }
-
-  const addBookmarkDataResult =
-    await database.relations.users_bookmarks.addBookUserBookmarks(
-      updateBookmarkData
-    );
-
-  if (addBookmarkDataResult.rowCount >= 1) {
-    res.status(200).send({
-      data: updateBookmarkData,
-      message: "Successfully bookmarked",
-    });
-    return;
-  }
-
-  res.status(400).send({
-    error: "Something went wrong when bookmarking the book",
-  });
-  return;
-}
-
+// POST /api/book/like
 async function handleAddLike(req, res) {
   const likeBookData = {
     email: req.body["email"],
@@ -231,81 +160,7 @@ async function handleAddLike(req, res) {
   return;
 }
 
-async function handleUpdateStatus(req, res) {
-  const updateStatusData = {
-    email: req.body["email"],
-    book_uuid: req.body["book_uuid"],
-    status: req.body["status"],
-  };
-
-  if (!validateBookStatus(updateStatusData)) {
-    res.status(400).send("Data received from client is not valid!");
-    return;
-  }
-
-  const database = res.locals.database;
-  const checkUserExists = await database.relations.users.checkUserExists(
-    updateStatusData.email
-  );
-
-  updateStatusData["timestamp_updated"] = getCurrentTimestamp();
-
-  if (!(checkUserExists.rows.length >= 1)) {
-    res.status(400).send("Email does not exist on database!");
-    return;
-  }
-
-  const checkBookExists = await database.relations.books.checkBookExists(
-    updateStatusData.book_uuid
-  );
-
-  if (!(checkBookExists.rows.length >= 1)) {
-    res.status(400).send("Book does not exist on database!");
-    return;
-  }
-
-  const checkIfBookStatusAdded =
-    await database.relations.books_users_status.checkIfBookStatusAdded(
-      updateStatusData.email,
-      updateStatusData.book_uuid
-    );
-
-  if (checkIfBookStatusAdded.rows.length >= 1) {
-    const updateStatusDataResult =
-      await database.relations.books_users_status.updateBookUserStatus(
-        updateStatusData.status,
-        updateStatusData.timestamp_updated,
-        updateStatusData.email,
-        updateStatusData.book_uuid
-      );
-
-    if (updateStatusDataResult.rowCount >= 1) {
-      res.status(200).send({
-        data: updateStatusData,
-        message: "Successfully updated book status",
-      });
-    }
-  }
-
-  const addStatusDataResult =
-    await database.relations.books_users_status.addBookUserStatus(
-      updateStatusData
-    );
-
-  if (addStatusDataResult.rowCount >= 1) {
-    res.status(200).send({
-      data: updateStatusData,
-      message: "Successfully added book status",
-    });
-    return;
-  }
-
-  res.status(400).send({
-    error: "Something went wrong when updating book status",
-  });
-  return;
-}
-
+// GET /api/book/topBooks
 async function handleGetTopBooks(req, res) {
   // Get top 50 books by likes
   const database = res.locals.database;
@@ -327,8 +182,6 @@ async function handleGetTopBooks(req, res) {
 export default {
   handleIndex,
   handleDeleteBook,
-  handleUpdateBookmark,
   handleAddLike,
-  handleUpdateStatus,
   handleGetTopBooks,
 };

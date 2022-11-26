@@ -23,7 +23,6 @@ export default function (database) {
     "/token",
     asyncErrorHandler(AuthenticationController.handleNewToken)
   );
-  router.get("/", AuthenticationController.handleIndex);
 
   return router;
 }

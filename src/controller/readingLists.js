@@ -4,6 +4,7 @@ import validateAddBookToReadingList from "../lib/readingLists/validateAddBookToR
 import validateNumberReceived from "../lib/utils/validateNumberReceived.js";
 import getCurrentTimestamp from "../lib/utils/getCurrentTimestamp.js";
 
+// GET /api/readingList/:readingListID
 async function handleGetSpecificReadingList(req, res) {
   // Check whetehr client sent a request to a route with valid BIGSERIAL parameter
   const readingListID = req.params.readingListID;
@@ -107,6 +108,7 @@ async function handleAddReadingList(req, res) {
   return;
 }
 
+// DELETE /api/readingList
 async function handleDeleteReadingList(req, res) {
   const readingListData = {
     reading_list_id: req.body["reading_list_id"],
@@ -185,6 +187,7 @@ async function handleDeleteReadingList(req, res) {
   return;
 }
 
+// POST /api/readingList/book
 async function handleAddBookToReadingList(req, res) {
   const bookToReadingListData = {
     reading_list_id: req.body["reading_list_id"],
@@ -284,6 +287,7 @@ async function handleAddBookToReadingList(req, res) {
   return;
 }
 
+// DELETE /api/readingList/book
 async function handleDeleteBookFromReadingList(req, res) {
   const bookFromReadingListData = {
     reading_list_id: req.body["reading_list_id"],
@@ -386,8 +390,6 @@ async function handleDeleteBookFromReadingList(req, res) {
     error: "Something went wrong when adding a reading list.",
   });
   return;
-
-  res.send("Hit delete /api/readingList/book...");
 }
 
 export default {

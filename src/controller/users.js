@@ -6,6 +6,7 @@ import getCurrentTimestamp from "../lib/utils/getCurrentTimestamp.js";
 
 import bcrypt from "bcrypt";
 
+// POST /api/user
 async function handleRegisterUser(req, res) {
   console.log(req.body);
 
@@ -55,6 +56,7 @@ async function handleRegisterUser(req, res) {
   }
 }
 
+// GET /api/user?email=
 async function handleGetUserData(req, res) {
   const email = req.query.email;
 
@@ -88,6 +90,7 @@ async function handleGetUserData(req, res) {
 
 }
 
+// PUT /api/user/changePassword
 async function handleChangePassword(req, res) {
   // Receive JSON from frontend
   const userData = {
@@ -138,6 +141,7 @@ async function handleChangePassword(req, res) {
   return;
 }
 
+// POST /api/user/likedBooks
 async function handleGetLikeBooks(req, res) {
   // Check the database for the reading list
   // Check if email was specified
@@ -163,6 +167,7 @@ async function handleGetLikeBooks(req, res) {
   return;
 }
 
+// POST /api/user/readingLists
 async function handleGetReadingBooks(req, res) {
   // Receive JSON from frontend
   if (!req.body.email) {

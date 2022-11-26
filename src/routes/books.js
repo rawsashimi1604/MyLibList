@@ -14,12 +14,7 @@ export default function (database) {
   // Routes
   router.get("/", asyncErrorHandler(BooksController.handleIndex));
   router.delete("/", asyncErrorHandler(BooksController.handleDeleteBook));
-  router.put(
-    "/addBookmark",
-    asyncErrorHandler(BooksController.handleUpdateBookmark)
-  );
   router.post("/like", asyncErrorHandler(BooksController.handleAddLike));
-  router.put("/status", asyncErrorHandler(BooksController.handleUpdateStatus));
   router.get("/topBooks", asyncErrorHandler(BooksController.handleGetTopBooks));
 
   return router;
