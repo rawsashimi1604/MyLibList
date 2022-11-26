@@ -56,38 +56,6 @@ async function handleIndex(req, res) {
   });
 }
 
-// DELETE /api/book
-async function handleDeleteBook(req, res) {
-  const bookUUID = req.body.book_uuid;
-
-  if (!validateBook(bookUUID)) {
-    res.status(400).send("Data received from client is not valid!");
-    return;
-  }
-
-  const database = res.locals.database;
-  const checkBookExists = await database.relations.books.checkBookExists(
-    bookUUID
-  );
-
-  if (!(checkBookExists.rows.length >= 1)) {
-    res.status(400).send("Book does not exist in the database");
-    return;
-  }
-
-  const deleteBookResult = await database.relations.books.deleteBookByID(
-    bookUUID
-  );
-  if (deleteBookResult.rows.length >= 1) {
-    res.status(200).send({
-      book_uuid: deleteBookResult.rows[0].book_uuid,
-      book_title: deleteBookResult.rows[0].title,
-      message: `Successfully deleted book UUID: ${bookUUID}`,
-    });
-    return;
-  }
-}
-
 // POST /api/book/like
 async function handleAddLike(req, res) {
   const likeBookData = {
@@ -205,7 +173,6 @@ async function handleGetTopBooks(req, res) {
 
 export default {
   handleIndex,
-  handleDeleteBook,
   handleAddLike,
   handleGetTopBooks,
 };
