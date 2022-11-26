@@ -126,6 +126,61 @@ async function getReadingListByID(readingListID) {
   }
 }
 
+async function checkBookInReadingListExists(data){
+  const client = await mongoClient();
+  try {
+    await client.close();
+    await client.connect();
+
+    const db = client.db("defaultdb");
+
+    const getBook = await db.collection("books").findOne(
+      { book_uuid: data.book_uuid }
+    )
+
+    const getUser = await db.collection("users").findOne(
+      { email : email }
+    )
+
+    let bookExist = false;
+
+    
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
+async function addBookList(data){
+  const client = await mongoClient();
+  try {
+    await client.close();
+    await client.connect();
+
+    const db = client.db("defaultdb");
+
+    const getBook = await db.collection("books").findOne(
+      { book_uuid: data.book_uuid }
+    )
+    
+    const getReadingList = await db.collection("reading_lists").findOne(
+      { _id: ObjectId(data.reading_list_id) }
+    )
+
+    const updateReadingList = await db.collection("reading_lists").updateOne(
+      { _id: ObjectId(data.reading_list_id) },
+      { $push: {books: {"$ref": "books", "$id" : ObjectId(getBook._id)}}}
+    )
+
+    return {
+      rows: [updateReadingList]
+    }
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
 async function deleteReadingListByID(reading_list_id) {
   console.log(reading_list_id)
   const client = await mongoClient();
@@ -209,4 +264,6 @@ export default {
   deleteReadingListByID,
   getAllReadingListsByEmail,
   getAllBooksFromReadingList,
+  checkBookInReadingListExists,
+  addBookList
 };
