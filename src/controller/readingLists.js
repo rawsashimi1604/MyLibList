@@ -40,6 +40,7 @@ async function handleGetSpecificReadingList(req, res) {
   return;
 }
 
+// GET /api/readingList/all
 async function handleAllReadingList(req, res) {
   const database = res.locals.database;
   const readingListsResult =
@@ -121,18 +122,20 @@ async function handleDeleteReadingList(req, res) {
     return;
   }
 
-  // Not a valid condition ! we did not receive a positive number
-  if (
-    !(validateNumberReceived && Number(readingListData.reading_list_id) > 0)
-  ) {
-    res.status(400).send({
-      error: "Received invalid ID from client",
-    });
-    return;
+  // Not a valid condition ! we did not receive a positive number (ONLY FOR POSTGRES)
+  const database = res.locals.database;
+  if (database.instance === "POSTGRES") {
+    if (
+      !(validateNumberReceived && Number(readingListData.reading_list_id) > 0)
+    ) {
+      res.status(400).send({
+        error: "Received invalid ID from client",
+      });
+      return;
+    }
   }
 
   // Check whether the email received exists in the database...
-  const database = res.locals.database;
   const checkUserExists = await database.relations.users.checkUserExists(
     readingListData.email
   );
@@ -144,7 +147,7 @@ async function handleDeleteReadingList(req, res) {
       .send("Email does not exist on database! Can't delete reading list!");
     return;
   }
-
+  
   // to check if email is tied to reading list that's about to be deleted
   const checkIsOwner =
     await database.relations.reading_lists.getReadingListByID(
@@ -161,6 +164,9 @@ async function handleDeleteReadingList(req, res) {
     return;
   }
 
+  console.log(checkIsOwner);
+  console.log(readingListData);
+
   // check if readinglist to be deleted belongs to owner
   if (!(checkIsOwner.rows[0]["email"] === readingListData.email)) {
     res.status(400).send("You can't delete a reading list that you don't own.");
@@ -175,16 +181,11 @@ async function handleDeleteReadingList(req, res) {
   // Successfully deleted
   if (deleteReadingListResult.rows.length >= 1) {
     res.status(200).send({
-      data: deleteReadingListResult.rows,
+      data: checkIsOwner,
       message: `Successfully deleted reading list with ID: ${readingListData.reading_list_id}`,
     });
     return;
   }
-
-  res.status(400).send({
-    error: "Something went wrong when adding a reading list.",
-  });
-  return;
 }
 
 // POST /api/readingList/book

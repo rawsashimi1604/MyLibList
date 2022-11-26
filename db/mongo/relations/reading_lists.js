@@ -9,7 +9,6 @@ async function getAllReadingList() {
     await client.connect();
 
     const db = client.db("defaultdb");
-    const res = await db.collection("reading_lists").find().toArray();
 
     const otherRes = await db.collection("reading_lists").aggregate([
       {'$match': { _id : {$exists: true} } },
@@ -93,11 +92,32 @@ async function getReadingListByID(readingListID) {
 
     const db = client.db("defaultdb");
 
-    const res = await db.collection("reading_lists").findOne(
-      { "_id": ObjectId(readingListID) }
-    );
+    // const res = await db.collection("reading_lists").findOne(
+    //   { "_id": ObjectId(readingListID) }
+    // );
 
-    console.log(res);
+    const res = await db.collection("reading_lists").aggregate([
+      {'$match': { _id : ObjectId(readingListID) } },
+      { $lookup : 
+        {
+          from: "users",
+          localField: "email.$id",
+          foreignField: "_id",
+          as: "email"
+        },
+      },
+      {
+        $unwind: "$email"
+      },
+      {
+        $project : { 
+          "email": "$email.email",
+          "name": 1,
+          "timestamp_created_on": 1
+        }
+      },
+    ]).toArray();
+
     return {
       rows: res
     }
@@ -109,9 +129,24 @@ async function getReadingListByID(readingListID) {
 }
 
 async function deleteReadingListByID(reading_list_id) {
+  console.log(reading_list_id)
+  const client = await mongoClient();
   try {
-    client.db().collection("reading_lists");
-    await client.deleteMany({ _id: ObjectId(reading_list_id) });
+    await client.close();
+    await client.connect();
+
+    const db = client.db("defaultdb");
+    
+    const res = await db.collection("reading_lists").deleteOne(
+      { _id : ObjectId(reading_list_id) }
+    );
+
+    if (res.deletedCount >= 1) {
+      return {
+        rows: [res]
+      }
+    }
+    
   } catch (err) {
     console.log(err);
     throw err;
