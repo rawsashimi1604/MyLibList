@@ -118,7 +118,7 @@ async function handleAddLike(req, res) {
     return;
   }
 
-  //IF book is liked, delete
+  // IF book is liked, delete
   let checkIfBookIsLiked;
 
   if(database.instance === "POSTGRES"){
@@ -126,20 +126,27 @@ async function handleAddLike(req, res) {
       likeBookData.email,
       likeBookData.book_uuid
     );
-  }else if(database.instance === "MONGO"){
+  } else if(database.instance === "MONGO"){
     checkIfBookIsLiked = await database.relations.books.checkIfBookIsLiked(
       likeBookData.email,
       likeBookData.book_uuid
     );
   }
-  
 
   if (checkIfBookIsLiked.rows.length >= 1) {
-    const deleteLike =
-      await database.relations.books_users_likes.deleteBookUsersLike(
+    let deleteLike;
+    if (database.instance === "POSTGRES") {
+      deleteLike = await database.relations.books_users_likes.deleteBookUsersLike(
         likeBookData.email,
         likeBookData.book_uuid
       );
+    } else if (database.instance === "MONGO") {
+      deleteLike = await database.relations.books.deleteLikeFromBook(
+        likeBookData.email,
+        likeBookData.book_uuid
+      )
+    }
+    
 
     if (deleteLike.rows.length >= 1) {
       res.status(200).send({

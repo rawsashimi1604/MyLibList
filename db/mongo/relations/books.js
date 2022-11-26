@@ -66,9 +66,28 @@ async function checkIfBookIsLiked(email, book_uuid){
     const getUser = await db.collection("users").findOne(
       { email : email }
     )
+    
+    // Iterate through user likes, check if book Object ID in likes array.
+    let bookIsLiked = false;
+    for (const ref of getUser.likes) {
+      const id = ref.toJSON().$id;
+      if (id.toString() === getBook._id.toString()) {
+        bookIsLiked = true;
+        break;
+      }
+    }
 
-    console.log(getBook.likes);
-    console.log(getUser.likes);
+    // If book is liked, return the liked book
+    if (bookIsLiked) {
+      return {
+        rows: [getUser]
+      }
+    } 
+
+    // Else return null
+    return {
+      rows: []
+    }
 
   } catch (err) {
     console.log(err);
@@ -98,16 +117,54 @@ async function addLikeToBook(book_uuid, email) {
     );
 
    // Update the user...
-    const updateUser = db.collection("users").updateOne(
+    const updateUser = await db.collection("users").updateOne(
       { email: email },
       { $push: {likes: {"$ref" : "books", "$id" : ObjectId(findBook._id)  }}}
-       
     )
-
-    console.log(res);
     
     return {
       rows: [res]
+    }
+
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
+async function deleteLikeFromBook(email, book_uuid) {
+  const client = await mongoClient();
+  try {
+    await client.close();
+    await client.connect();
+
+    const db = client.db("defaultdb");
+    
+    // decrement book likes
+    const res = await db.collection("books").updateOne(
+      { book_uuid: book_uuid },
+      { $inc: { likes: -1 }}
+    );
+
+    // Get the book ObjectID
+    const findBook = await db.collection("books").findOne(
+      { book_uuid: book_uuid }
+    );
+
+    // Remove DBRef from user likes array
+    const updateUser = await db.collection("users").updateOne(
+      { email: email },
+      { $pull: {likes: {"$ref" : "books", "$id" : ObjectId(findBook._id)  }}}
+    )
+
+    if (updateUser.modifiedCount >= 1) {
+      return {
+        rows: [findBook]
+      }
+    }
+
+    return {
+      rows: []
     }
 
   } catch (err) {
@@ -120,5 +177,6 @@ export default {
   getTopBooksByLikes,
   checkBookExists,
   addLikeToBook,
-  checkIfBookIsLiked
+  checkIfBookIsLiked,
+  deleteLikeFromBook
 };
