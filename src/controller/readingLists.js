@@ -255,11 +255,18 @@ async function handleAddBookToReadingList(req, res) {
     return;
   }
 
-  // check if book is already in reading list
-  const checkBookExistsInReadingList =
-    await database.relations.book_lists.checkBookInReadingListExists(
+ //check if book is already in reading list
+  let checkBookExistsInReadingList;
+  if(database.instance === "POSTGRES"){
+    checkBookExistsInReadingList = await database.relations.book_lists.checkBookInReadingListExists(
       bookToReadingListData
     );
+  }else if(database.instance === "MONGO"){
+    checkBookExistsInReadingList = await database.relations.reading_lists.checkBookInReadingListExists(
+      bookToReadingListData
+    )
+  }
+
   if (checkBookExistsInReadingList.rows.length >= 1) {
     res
       .status(400)
