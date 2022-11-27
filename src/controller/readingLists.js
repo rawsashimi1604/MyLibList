@@ -320,6 +320,7 @@ async function handleDeleteBookFromReadingList(req, res) {
     email: req.body["email"],
   };
 
+  console.log(bookFromReadingListData)
   // check if data received has key and value
   if (!validateAddBookToReadingList(bookFromReadingListData)) {
     res.status(400).send("Data received from client is not valid!");
