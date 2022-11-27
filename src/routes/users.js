@@ -24,7 +24,7 @@ export default function (database) {
   );
   router.post(
     "/readingLists",
-    asyncErrorHandler(UsersController.handleGetReadingBooks)
+    asyncErrorHandler(UsersController.handleGetReadingListsByEmail)
   );
 
   return router;

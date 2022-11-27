@@ -175,7 +175,7 @@ async function handleGetLikeBooks(req, res) {
 }
 
 // POST /api/user/readingLists
-async function handleGetReadingBooks(req, res) {
+async function handleGetReadingListsByEmail(req, res) {
   // Receive JSON from frontend
   if (!req.body.email) {
     res.status(400).send({
@@ -202,5 +202,5 @@ export default {
   handleGetUserData,
   handleChangePassword,
   handleGetLikeBooks,
-  handleGetReadingBooks,
+  handleGetReadingListsByEmail,
 };
