@@ -24,7 +24,6 @@ async function batchSeedData(data, insertFunction) {
 function getBooksFormatted() {
   let booksExampleCache = [];
 
-  let count = 0;
   for (const book of booksFromCSV.slice(0, NUMBER_OF_BOOKS_TO_ADD)) {
     
     const publisherArr = []
@@ -38,7 +37,6 @@ function getBooksFormatted() {
         publisherArr.push(publisher)
     }
 
-    if (count === 5) break;
     const booksExample = {
       book_uuid: book.uuid,
       access_rights: book.access_rights,
@@ -57,7 +55,6 @@ function getBooksFormatted() {
       likes: 0,
     };
     booksExampleCache.push(booksExample);
-    count++;
   }
   return booksExampleCache;
 }

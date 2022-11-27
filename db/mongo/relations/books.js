@@ -194,57 +194,69 @@ async function getBookBySearchParams(query) {
       "publisher",
     ];
     
-    const queryObject = {}
+    const queryObject = { "$and" : [] }
 
     for (const queryParam of Object.keys(query)) {
-      console.log(queryParam)
 
       if (queryParam === "book_uuid") {
-        queryObject[queryParam] = query[queryParam];
+        queryObject.$and.push(
+          {[queryParam] : query[queryParam]}
+        )
       }
 
       else if (queryParam === "title") {
-        queryObject[queryParam] = new RegExp('.*' + query[queryParam].toLowerCase() + '.*')
+        queryObject.$and.push(
+          {[queryParam] : new RegExp('.*' + query[queryParam] + '.*', "i")}
+        )
       }
 
       else if (queryParam === "language") {
-        // queryObject[queryParam] = query[queryParam];
-
         // Match array
-        queryObject["languages"] = [query[queryParam]]
+        queryObject.$and.push(
+          {"languages" : query[queryParam] }
+        )
       }
 
       else if (queryParam === "collection") {
-        queryObject["collections"] = [query[queryParam]]
+        queryObject.$and.push(
+          {"collections" : query[queryParam] }
+        )
       }
 
       else if (queryParam === "subject") {
-        queryObject[queryParam] = query[queryParam];
+        queryObject.$and.push(
+          {"subjects" : query[queryParam] }
+        )
       }
 
       else if (queryParam === "contributor") {
-        queryObject[queryParam] = query[queryParam];
+        queryObject.$and.push(
+          {"contributors" : { contributor: query[queryParam] }}
+        )
       }
 
       else if (queryParam === "lcsh") {
-        queryObject[queryParam] = query[queryParam];
+        queryObject.$and.push(
+          {"lcsh" : query[queryParam] }
+        )
       }
 
       else if (queryParam === "publisher") {
-        queryObject[queryParam] = new RegExp('.*' + query[queryParam].toLowerCase() + '.*')
+        queryObject.$and.push(
+          {"publishers" : new RegExp('.*' + query[queryParam] + '.*', "i") }
+        )
       }
 
     }
 
-    console.log(queryObject)
+    console.log(queryObject);
 
     const books = await db.collection("books").find(
       queryObject
-    ).toArray()
+    ).limit(20).toArray()
 
-    console.log(books)
-
-    // console.log(query);
+    console.log({ rows: books })
+    return { rows: books }
 
   } catch (err) {
     console.log(err);

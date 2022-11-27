@@ -38,18 +38,21 @@ async function handleIndex(req, res) {
   );
 
   // Strip empty objects in contributor key
-  // Insert number of likes
-  for (const book of bookData.rows) {
-    book.contributors = book.contributors.filter(
-      (contributor) => Object.keys(contributor).length !== 0
-    );
-
-    const likesData =
-      await database.relations.books_users_likes.getNumberOfLikes(
-        book.book_uuid
+  // Insert number of likes (only for postgres)
+  if (database.instance === "POSTGRES") {
+    for (const book of bookData.rows) {
+      book.contributors = book.contributors.filter(
+        (contributor) => Object.keys(contributor).length !== 0
       );
-    book["likes"] = likesData.rows[0].count;
+  
+      const likesData =
+        await database.relations.books_users_likes.getNumberOfLikes(
+          book.book_uuid
+        );
+      book["likes"] = likesData.rows[0].count;
+    }
   }
+  
 
   return res.status(200).send({
     data: [...bookData.rows],
