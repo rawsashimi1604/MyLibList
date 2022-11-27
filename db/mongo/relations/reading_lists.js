@@ -122,6 +122,7 @@ async function getReadingListByID(readingListID) {
             email: "$email.email",
             name: 1,
             timestamp_created_on: 1,
+            reading_list_id: 1
           },
         },
       ])
