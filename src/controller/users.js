@@ -87,7 +87,6 @@ async function handleGetUserData(req, res) {
     error: "User is not registered",
   });
   return;
-
 }
 
 // PUT /api/user/changePassword
@@ -154,18 +153,16 @@ async function handleGetLikeBooks(req, res) {
 
   const database = res.locals.database;
   let getLikeBooksResult;
-  if (database.instance === "POSTGRES"){
-    getLikeBooksResult = await database.relations.books_users_likes.getAllBooksUsersLikes(
-      req.body.email
-    );
-  }else if (database.instance === "MONGO"){
+  if (database.instance === "POSTGRES") {
+    getLikeBooksResult =
+      await database.relations.books_users_likes.getAllBooksUsersLikes(
+        req.body.email
+      );
+  } else if (database.instance === "MONGO") {
     getLikeBooksResult = await database.relations.users.getAllBooksUsersLikes(
       req.body.email
     );
   }
-
-
-
 
   res.status(200).send({
     data: getLikeBooksResult.rows,
