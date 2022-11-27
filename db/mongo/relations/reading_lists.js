@@ -239,6 +239,40 @@ async function getAllReadingListsByEmail(email) {
   }
 }
 
+async function deleteBookFromReadingListByID(data){
+  const client = await mongoClient();
+  try {
+    await client.close();
+    await client.connect();
+
+    const db = client.db("defaultdb");
+
+    // Get the book ObjectID
+    const findBook = await db.collection("books").findOne(
+      { book_uuid: data.book_uuid }
+    );
+
+    const updateReadingList = await db.collection("reading_lists").updateOne(
+      { _id: ObjectId(data.reading_list_id) },
+      { $pull: { books: { "$ref": "books", "$id": ObjectId(findBook._id) } } }
+    )
+    
+    if (updateReadingList.modifiedCount >= 1){
+      return{
+        rows: [findBook]
+      }
+    }
+
+    return {
+      rows: []
+    }
+
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
 async function getAllBooksFromReadingList(readingListID) {
   const client = await mongoClient();
   try {
@@ -269,5 +303,6 @@ export default {
   getAllReadingListsByEmail,
   getAllBooksFromReadingList,
   checkBookInReadingListExists,
-  addBookList
+  addBookList,
+  deleteBookFromReadingListByID
 };
