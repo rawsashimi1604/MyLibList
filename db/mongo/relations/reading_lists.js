@@ -230,9 +230,25 @@ async function deleteReadingListByID(reading_list_id) {
 }
 
 async function getAllReadingListsByEmail(email) {
+  const client = await mongoClient()
   try {
-    client.db().collection("reading_lists");
-    await client.find({ email: email });
+    await client.close();
+    await client.connect();
+
+    const db = client.db("defaultdb");
+
+    const getUser = await db.collection("users").findOne(
+      { email: email }
+    );
+    
+    const findReadingLists = await db.collection("reading_lists").find(
+      { 'email': DBRef("users", ObjectId(getUser._id)) }
+    ).toArray();
+
+    return{
+      rows: findReadingLists
+    }
+    
   } catch (err) {
     console.log(err);
     throw err;
