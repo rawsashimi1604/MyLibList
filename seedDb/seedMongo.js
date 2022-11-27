@@ -24,8 +24,10 @@ async function batchSeedData(data, insertFunction) {
 function getBooksFormatted() {
   let booksExampleCache = [];
 
+  let count = 0;
   for (const book of booksFromCSV.slice(0, NUMBER_OF_BOOKS_TO_ADD)) {
     
+    // if (count === 5) break;
     const publisherArr = []
     for (const publisher of book.digital_publisher) {
       if (!(publisher in publisherArr))
@@ -37,10 +39,12 @@ function getBooksFormatted() {
         publisherArr.push(publisher)
     }
 
+    console.log(book)
+
     const booksExample = {
       book_uuid: book.uuid,
       access_rights: book.access_rights,
-      abtract: book.abtract,
+      abstract: book.abtract,
       title: book.title,
       uri: book.uri,
       date_created: book.date_created,
@@ -50,11 +54,12 @@ function getBooksFormatted() {
       lcsh: book.subject_lcsh,
       publishers: publisherArr,
       collections: book.collections,
-      alternative_title: book.alternative_title,
-      contributors: book.contributors[0],
+      alternative_titles: book.alternative_titles,
+      contributors: book.contributors,
       likes: 0,
     };
     booksExampleCache.push(booksExample);
+    count++;
   }
   return booksExampleCache;
 }

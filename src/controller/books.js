@@ -53,6 +53,7 @@ async function handleIndex(req, res) {
     }
   }
   
+  console.log(bookData.rows);
 
   return res.status(200).send({
     data: [...bookData.rows],
