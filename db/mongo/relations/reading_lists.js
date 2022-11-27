@@ -76,7 +76,7 @@ async function addReadingList(readingList) {
 
     const updateReadingListID = await db.collection("reading_lists").updateOne(
       { _id: added.insertedId },
-      { $set:{ reading_list_id: added.insertedId} }
+      { $set: { reading_list_id: added.insertedId } }
     )
     const res = await db
       .collection("reading_lists")
@@ -147,24 +147,24 @@ async function checkBookInReadingListExists(data) {
     const getReadingList = await db.collection("reading_lists").findOne(
       { _id: ObjectId(data.reading_list_id) }
     )
-    
+
     console.log(getReadingList)
     let bookExist = false;
-    for (const ref of getReadingList.books){
+    for (const ref of getReadingList.books) {
       const id = ref.toJSON().$id;
-      if(id.toString() === getBook._id.toString()){
+      if (id.toString() === getBook._id.toString()) {
         bookExist = true;
         break;
       }
     }
 
-    if (bookExist){
-      return{
+    if (bookExist) {
+      return {
         rows: [getReadingList]
       }
     }
 
-    return{
+    return {
       rows: []
     }
 
@@ -281,8 +281,31 @@ async function getAllBooksFromReadingList(readingListID) {
 
     const db = client.db("defaultdb");
 
+    const getBook = await db.collection("books").findOne(
+      { book_uuid: readingListID.book_uuid }
+    )
+
     const res = await db.collection("reading_lists").aggregate([
       { '$match': { _id: ObjectId(readingListID) } },
+      {
+        $lookup:
+        {
+          from: "books",
+          localField: "books.$id",
+          foreignField: "_id",
+          as: "book"
+        },
+      },
+      {
+        $unwind: "$book"
+      },
+      {
+        $project: {
+          "book_uuid": "$book.book_uuid",
+          "title": "$book.title",
+          "_id": 0
+        }
+      },
     ]).toArray();
 
     return {
