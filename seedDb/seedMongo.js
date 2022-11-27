@@ -12,7 +12,7 @@ const database = databases.MongoDatabase;
 console.log("seed script");
 const booksFromCSV = await cleanCSVData("./seedDb/csv_data/nlb_data.csv");
 
-const NUMBER_OF_BOOKS_TO_ADD = 10000;
+const NUMBER_OF_BOOKS_TO_ADD = booksFromCSV.length;
 
 async function batchSeedData(data, insertFunction) {
   // Insert into database... (1000 at a time)
@@ -26,17 +26,14 @@ function getBooksFormatted() {
 
   let count = 0;
   for (const book of booksFromCSV.slice(0, NUMBER_OF_BOOKS_TO_ADD)) {
-    
     // if (count === 5) break;
-    const publisherArr = []
+    const publisherArr = [];
     for (const publisher of book.digital_publisher) {
-      if (!(publisher in publisherArr))
-        publisherArr.push(publisher)
+      if (!(publisher in publisherArr)) publisherArr.push(publisher);
     }
 
     for (const publisher of book.original_publisher) {
-      if (!(publisher in publisherArr))
-        publisherArr.push(publisher)
+      if (!(publisher in publisherArr)) publisherArr.push(publisher);
     }
 
     const booksExample = {
@@ -72,6 +69,17 @@ async function seedMongo() {
   const books = db.collection("books");
   const result = await books.insertMany(booksData, options);
   console.log("inserted books...");
+  // const index = await books.createIndex(
+  //   {
+  //     title: 1,
+  //     // alternative_titles: 1,
+  //     // subjects: 1,
+  //     // publishers: 1,
+  //     // contributors: 1,
+  //     // languages: 1,
+  //   },
+  //   { name: "query for books" }
+  // );
   await client.close();
 }
 
