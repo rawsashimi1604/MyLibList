@@ -76,7 +76,7 @@ async function addReadingList(readingList) {
 
     const updateReadingListID = await db.collection("reading_lists").updateOne(
       { _id: added.insertedId },
-      { $set:{ reading_list_id: added.insertedId} }
+      { $set: { reading_list_id: added.insertedId } }
     )
     const res = await db
       .collection("reading_lists")
@@ -133,7 +133,7 @@ async function getReadingListByID(readingListID) {
   }
 }
 
-async function checkBookInReadingListExists(data){
+async function checkBookInReadingListExists(data) {
   const client = await mongoClient();
   try {
     await client.close();
@@ -147,24 +147,24 @@ async function checkBookInReadingListExists(data){
     const getReadingList = await db.collection("reading_lists").findOne(
       { _id: ObjectId(data.reading_list_id) }
     )
-    
+
     console.log(getReadingList)
     let bookExist = false;
-    for (const ref of getReadingList.books){
+    for (const ref of getReadingList.books) {
       const id = ref.toJSON().$id;
-      if(id.toString() === getBook._id.toString()){
+      if (id.toString() === getBook._id.toString()) {
         bookExist = true;
         break;
       }
     }
 
-    if (bookExist){
-      return{
+    if (bookExist) {
+      return {
         rows: [getReadingList]
       }
     }
 
-    return{
+    return {
       rows: []
     }
 
@@ -174,7 +174,7 @@ async function checkBookInReadingListExists(data){
   }
 }
 
-async function addBookList(data){
+async function addBookList(data) {
   const client = await mongoClient();
   try {
     await client.close();
@@ -185,14 +185,14 @@ async function addBookList(data){
     const getBook = await db.collection("books").findOne(
       { book_uuid: data.book_uuid }
     )
-    
+
     const getReadingList = await db.collection("reading_lists").findOne(
       { _id: ObjectId(data.reading_list_id) }
     )
 
     const updateReadingList = await db.collection("reading_lists").updateOne(
       { _id: ObjectId(data.reading_list_id) },
-      { $push: {books: {"$ref": "books", "$id" : ObjectId(getBook._id)}}}
+      { $push: { books: { "$ref": "books", "$id": ObjectId(getBook._id) } } }
     )
 
     return {
@@ -239,6 +239,40 @@ async function getAllReadingListsByEmail(email) {
   }
 }
 
+async function deleteBookFromReadingListByID(data){
+  const client = await mongoClient();
+  try {
+    await client.close();
+    await client.connect();
+
+    const db = client.db("defaultdb");
+
+    // Get the book ObjectID
+    const findBook = await db.collection("books").findOne(
+      { book_uuid: data.book_uuid }
+    );
+
+    const updateReadingList = await db.collection("reading_lists").updateOne(
+      { _id: ObjectId(data.reading_list_id) },
+      { $pull: { books: { "$ref": "books", "$id": ObjectId(findBook._id) } } }
+    )
+    
+    if (updateReadingList.modifiedCount >= 1){
+      return{
+        rows: [findBook]
+      }
+    }
+
+    return {
+      rows: []
+    }
+
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
 async function getAllBooksFromReadingList(readingListID) {
   const client = await mongoClient();
   try {
@@ -247,25 +281,29 @@ async function getAllBooksFromReadingList(readingListID) {
 
     const db = client.db("defaultdb");
 
+    const getBook = await db.collection("books").findOne(
+      { book_uuid: readingListID.book_uuid }
+    )
+
     const res = await db.collection("reading_lists").aggregate([
       { '$match': { _id: ObjectId(readingListID) } },
       {
         $lookup:
         {
-          from: "users",
-          localField: "email.$id",
+          from: "books",
+          localField: "books.$id",
           foreignField: "_id",
-          as: "email"
+          as: "book"
         },
       },
       {
-        $unwind: "$email"
+        $unwind: "$book"
       },
       {
         $project: {
-          "email": "$email.email",
-          "name": 1,
-          "timestamp_created_on": 1
+          "book_uuid": "$book.book_uuid",
+          "title": "$book.title",
+          "_id": 0
         }
       },
     ]).toArray();
@@ -288,5 +326,6 @@ export default {
   getAllReadingListsByEmail,
   getAllBooksFromReadingList,
   checkBookInReadingListExists,
-  addBookList
+  addBookList,
+  deleteBookFromReadingListByID
 };
