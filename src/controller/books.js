@@ -108,6 +108,7 @@ async function handleAddLike(req, res) {
   if (checkIfBookIsLiked.rows.length >= 1) {
     let deleteLike;
     if (database.instance === "POSTGRES") {
+      console.log("book is liked")
       deleteLike = await database.relations.books_users_likes.deleteBookUsersLike(
         likeBookData.email,
         likeBookData.book_uuid
@@ -119,6 +120,7 @@ async function handleAddLike(req, res) {
       )
     }
     
+    console.log(deleteLike)
     if (deleteLike.rows.length >= 1) {
       res.status(200).send({
         email: `${likeBookData.email}`,
