@@ -39,8 +39,6 @@ function getBooksFormatted() {
         publisherArr.push(publisher)
     }
 
-    console.log(book)
-
     const booksExample = {
       book_uuid: book.uuid,
       access_rights: book.access_rights,

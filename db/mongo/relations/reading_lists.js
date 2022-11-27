@@ -242,7 +242,8 @@ async function getAllReadingListsByEmail(email) {
 
     const userid = await db.collection("users").findOne({ email: email });
 
-    const findReadingLists = await db
+    if (userid) {
+      const findReadingLists = await db
       .collection("reading_lists")
       .aggregate([
         { $match: { "email.$id": userid._id } },
@@ -265,11 +266,16 @@ async function getAllReadingListsByEmail(email) {
       ])
       .toArray();
 
-    console.log(findReadingLists);
-
+      console.log(findReadingLists);
+      return {
+        rows: findReadingLists,
+      };
+    }
+    
     return {
-      rows: findReadingLists,
-    };
+      rows : []
+    }
+    
   } catch (err) {
     console.log(err);
     throw err;
