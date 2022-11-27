@@ -173,10 +173,90 @@ async function deleteLikeFromBook(email, book_uuid) {
   }
 }
 
+async function getBookBySearchParams(query) {
+  const client = await mongoClient();
+  try {
+    await client.close();
+    await client.connect();
+
+    const db = client.db("defaultdb");
+
+
+    // GENERATE WHITELIST
+    const whitelist = [
+      "book_uuid",
+      "title",
+      "language",
+      "collection",
+      "subject",
+      "contributor",
+      "lcsh",
+      "publisher",
+    ];
+    
+    const queryObject = {}
+
+    for (const queryParam of Object.keys(query)) {
+      console.log(queryParam)
+
+      if (queryParam === "book_uuid") {
+        queryObject[queryParam] = query[queryParam];
+      }
+
+      else if (queryParam === "title") {
+        queryObject[queryParam] = new RegExp('.*' + query[queryParam].toLowerCase() + '.*')
+      }
+
+      else if (queryParam === "language") {
+        // queryObject[queryParam] = query[queryParam];
+
+        // Match array
+        queryObject["languages"] = [query[queryParam]]
+      }
+
+      else if (queryParam === "collection") {
+        queryObject["collections"] = [query[queryParam]]
+      }
+
+      else if (queryParam === "subject") {
+        queryObject[queryParam] = query[queryParam];
+      }
+
+      else if (queryParam === "contributor") {
+        queryObject[queryParam] = query[queryParam];
+      }
+
+      else if (queryParam === "lcsh") {
+        queryObject[queryParam] = query[queryParam];
+      }
+
+      else if (queryParam === "publisher") {
+        queryObject[queryParam] = new RegExp('.*' + query[queryParam].toLowerCase() + '.*')
+      }
+
+    }
+
+    console.log(queryObject)
+
+    const books = await db.collection("books").find(
+      queryObject
+    ).toArray()
+
+    console.log(books)
+
+    // console.log(query);
+
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
 export default {
   getTopBooksByLikes,
   checkBookExists,
   addLikeToBook,
   checkIfBookIsLiked,
-  deleteLikeFromBook
+  deleteLikeFromBook,
+  getBookBySearchParams
 };
