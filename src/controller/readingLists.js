@@ -373,10 +373,18 @@ async function handleDeleteBookFromReadingList(req, res) {
 
   // check if book is already in reading list
   
-  // const checkBookExistsInReadingList =
-  //   await database.relations.book_lists.checkBookInReadingListExists(
-  //     bookFromReadingListData
-  //   );
+  let checkBookExistsInReadingList;
+
+  if(database.instance === "POSTGRES"){
+    checkBookExistsInReadingList = await database.relations.book_lists.checkBookInReadingListExists(
+      bookFromReadingListData
+    );
+  } else if (database.instance === "MONGO"){
+    checkBookExistsInReadingList = await database.relations.reading_lists.checkBookInReadingListExists(
+      bookFromReadingListData
+    );
+  }
+
   if (!(checkBookExistsInReadingList.rows.length >= 1)) {
     res
       .status(400)
@@ -409,7 +417,7 @@ async function handleDeleteBookFromReadingList(req, res) {
     );
   }
 
-  
+
  
   console.log(deleteBookFromReadingListResult);
   // If the database returned us 1 row, means it has succesfully added to the database...
