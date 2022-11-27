@@ -209,7 +209,7 @@ function getBookBySearchParams(queryObj) {
       }
       // lcsh check
       else if (key === "lcsh") {
-        where.push(`lcsh.${key} = $${count}`);
+        where.push(`lcsh.lcsh_tag = $${count}`);
         params.push(queryObj[key]);
       }
       // publisher check
