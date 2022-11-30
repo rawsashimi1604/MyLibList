@@ -6,6 +6,8 @@ def startFrontendApplication():
   try:
     os.chdir("client");
     os.system("docker build -t docker_nextjs:developement .");
+    os.system("docker stop client");
+    os.system("docker rm client");
     os.system("docker run --publish 3000:3000 --name client docker_nextjs:developement");
   except KeyboardInterrupt:
     print("Stopping Frontend Application")
