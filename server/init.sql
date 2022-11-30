@@ -216,22 +216,34 @@ CREATE INDEX idx_bookTitle ON "books"(
     title
 );
 
+CLUSTER "books" USING idx_bookTitle;
+
 CREATE INDEX idx_bookAltTitle ON "alternative_titles"(
     alternative_title
 );
+
+CLUSTER "alternative_titles" USING idx_bookAltTitle;
 
 CREATE INDEX idx_bookSubject ON "subjects"(
     subject_title
 );
 
+CLUSTER "subjects" USING idx_bookSubject;
+
 CREATE INDEX idx_bookPublisher ON "publishers"(
     publisher
 );
+
+CLUSTER "publishers" USING idx_bookPublisher;
 
 CREATE INDEX idx_bookContributor ON "contributors"(
     contributor
 );
 
+CLUSTER "contributors" USING idx_bookContributor;
+
 CREATE INDEX idx_bookLanguage ON "languages"(
     language
 );
+
+CLUSTER "languages" USING idx_bookLanguage;
