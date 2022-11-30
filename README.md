@@ -67,3 +67,24 @@ REFRESH_TOKEN_SECRET=3b4afa89360cdd66701f1aa510ce2c5f691092eb14166a29483fc918e0c
 
 ### Changing database instance between MONGO and POSTGRES
 - To change the database instance that is currently being run, simply change the `DATABASE` variable in the `.env` file to `POSTGRES` or `MONGO`. After, stop the docker containers and run a `docker system prune` to ensure all containers are stopped. Then rerun the app, and the application will restart using the specified database instance.
+
+### API Routes
+| Route | Function   |
+| --------- | -------------- |
+| POST /api/user | Register new user to the system. |
+| GET /api/user?email= | Get user data by email from system | 
+| PUT /api/user/changePassword | Update user’s password |
+| POST /api/user/likedBooks | GET user’s liked books by sending email query |
+| POST /api/user/readingLists | GET user’s reading lists by sending email query |
+| GET /api/readingList/:readingListID | GET user’s reading lists by specific readingListID | 
+| GET /api/readingList/all | GET all user’s reading list |
+| POST /api/readingList | CREATE user’s reading list |
+| DELETE /api/readingList | DELETE user’s reading list |
+| POST /api/readingList/book | CREATE new book in user’s reading list | 
+| DELETE /api/readingList/book | DELETE book from user’s reading list |
+| GET /api/book | GET specific book |
+| POST /api/book/like | CREATE like for book | 
+| GET /api/book/topBooks | GET top 20 books sorted by likes |
+| POST /api/auth/login | Logs user in, providing a JWT access and refresh token. Token is then stored in the user’s cache. |
+| DELETE /api/auth/logout | DELETE user’s JWT refresh token | 
+| POST /api/auth/token | CREATE new refresh token |
