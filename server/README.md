@@ -11,16 +11,6 @@ This is our server component for our project for module **ICT2103 Information Ma
 | 2100711   | 2100711        | Lee Yong Chong    |
 | 2100764   | ZafrullaKamil  | Zafrulla          |
 
-## Technologies used
-
-- Docker
-- PostgreSQL
-- Node.js
-- Express.js
-- Prettier
-- REST API
-- JSON Web Tokens (JWT)
-
 ## Requirements
 
 - You should have Docker Desktop installed on your local machine.
