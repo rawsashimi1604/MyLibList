@@ -77,7 +77,8 @@ To generate these secrets, navigate to `secret.js` and run the file using `node 
 
 ### Running API Requests to the backend through Postman.
 
-To manually test the Postman Collection, import the postman collection located at 
+To manually test the Postman Collection, import the postman collection located at `./2103-Project.postman_collection.json` 
+
 ### API Routes
 | Route | Function   |
 | --------- | -------------- |
@@ -103,11 +104,15 @@ To manually test the Postman Collection, import the postman collection located a
 
 ### CD (Continuous Development)
 
-- Run `npm run docker:dev`
-- Docker seeds PSQL database using `init.sql` and ~~`database scripts found in the seedDB folder`~~ (current not setup yet).
-- Docker starts PSQL app
-- Docker starts Node.js appp
+- Run `py startBackend.py`
+- Docker starts PSQLDB app
+- Docker starts MongoDB app
+- Docker seeds PSQL database using `init.sql` and `database scripts found in the seedDB folder`
+- Docker starts Node.js app
 - Application has successfully started with all predefined data
+
+- Run `py startFrontend.py`
+- Docker starts Next.js app
 
 ### CI (Continuous Integration)
 
