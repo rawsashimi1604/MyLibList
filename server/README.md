@@ -21,29 +21,7 @@ This is our server component for our project for module **ICT2103 Information Ma
 - You should have an `.env` file created in the root directory of this project. Details of `.env` file will be provided below.
 - You should have Postman to simulate/run API requests to the server.
 
-### Environment File Contents
 
-Create `.env` file, put in root directory. Contents:
-
-```
-BACKEND_PORT=8085
-FRONTEND_PORT=5000
-
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=<choose any password>
-POSTGRES_HOST=db
-POSTGRES_PORT=5432
-POSTGRES_DB=defaultdb
-
-FRONTEND_APP_URL=<For deployment, not needed for local development.>
-
-ACCESS_TOKEN_SECRET=<your access token secret>
-REFRESH_TOKEN_SECRET=<your refresh token secret>
-```
-
-#### Generating access token and refresh token secrets
-
-To generate these secrets, navigate to `secret.js` and run the file using `node secret.js`, a secret will be generated using the `generateSecret()` algorithm and you can put it into your `.env` environment variables.
 
 ## Scripts
 
@@ -72,54 +50,8 @@ Verbose function names, be descriptive with function names
 - `add()` :disappointed_relieved: This is bad.
 - `addUserIntoDatabase()` :heart_eyes: This is good.
 
-## CI/CD flow
-
-### CD (Continuous Development)
-
-- Run `npm run docker:dev`
-- Docker seeds PSQL database using `init.sql` and ~~`database scripts found in the seedDB folder`~~ (current not setup yet).
-- Docker starts PSQL app
-- Docker starts Node.js appp
-- Application has successfully started with all predefined data
-
-### CI (Continuous Integration)
-
-- After adding some code
-- Use `npm run beautify` to achieve similar coding formatting standards
-- Add/pull to git repo using git commands
-  - `git add .`
-  - `git commit -m ""`
-  - `git push`
 
 ## General development guide
-
-### Setup
-
-- Make sure you have Docker on your machine. Use the command `docker ps` to check.
-- Create the postgres volume.
-
-```
-// Creating the docker volume
-docker volume create postgres-data
-
-// Check if volume was created
-docker volume ls
-```
-
-- Clone the github repo
-
-```
-git clone https://github.com/rawsashimi1604/MyLibList_server.git
-cd MyLibList_server
-```
-
-- Create the `.env` file and put it in the root directory.
-- Run the command `npm run docker:dev` to start the docker container.
-- You should see this if the container was run correctly, backend app should be functioning.
-
-```
-Server has successfully started on port: 8085
-```
 
 ### Database Seeding
 

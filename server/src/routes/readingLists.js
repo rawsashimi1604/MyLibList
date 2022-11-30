@@ -20,10 +20,6 @@ export default function (database) {
     "/addReadingList",
     asyncErrorHandler(ReadingListsController.handleAddReadingList)
   );
-  router.delete(
-    "/",
-    asyncErrorHandler(ReadingListsController.handleDeleteReadingList)
-  );
   router.post(
     "/book",
     asyncErrorHandler(ReadingListsController.handleAddBookToReadingList)
